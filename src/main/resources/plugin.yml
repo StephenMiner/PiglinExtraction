@@ -1,0 +1,18 @@
+name: PiglinExtraction
+version: BETA
+
+main: piglinextraction.me.stephenminer.PiglinExtraction
+api-version: 1.18
+commands:
+  testing:
+  locker:
+  roomWand:
+  room:
+  levelGroup:
+  level:
+  setHub:
+  join:
+  door:
+  spawner:
+  pegive:
+  peHorde:
