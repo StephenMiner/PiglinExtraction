@@ -2,6 +2,7 @@ package piglinextraction.me.stephenminer.containers;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -112,6 +113,33 @@ public class Items {
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
+    }
+
+    public ItemStack hordeNode(String hordeId, int delay, int toSpawn, List<String> types){
+        ItemStack item = new ItemStack(Material.STICK);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(ChatColor.AQUA + hordeId + " node wand");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.ITALIC + "delay:" + delay);
+        lore.add(ChatColor.ITALIC + "toSpawn:"+ toSpawn);
+        StringBuilder typeString = new StringBuilder("types:");
+        for (String entry : types){
+            typeString.append(entry).append(",");
+        }
+        typeString.deleteCharAt(typeString.length());
+        lore.add(typeString.toString());
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    private String formString(Location loc, int delay, int toSpawn, List<String> types){
+        StringBuilder out = new StringBuilder(plugin.fromBlockLoc(loc) + "/" + delay + "/" + toSpawn + "/");
+        for (String str : types){
+            out.append(str).append(",");
+        }
+        out.deleteCharAt(out.length());
+        return out.toString();
     }
 /*
     public ItemStack levelIcon(Level level){

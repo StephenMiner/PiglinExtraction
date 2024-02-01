@@ -84,7 +84,7 @@ public class PlayerMele implements Listener {
         ItemStack item = event.getMainHandItem();
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
-        if (item != null && item.getType() == Material.SHIELD && Shield.shields.containsKey(uuid)){
+        if (item != null && (item.getType() == Material.STICK || item.getType() == Material.SHIELD) && Shield.shields.containsKey(uuid)){
             Shield shield = Shield.shields.get(uuid);
             shield.push(player);
             event.setCancelled(true);

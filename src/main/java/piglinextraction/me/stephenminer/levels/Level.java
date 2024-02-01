@@ -19,6 +19,7 @@ import piglinextraction.me.stephenminer.player.DeathMarker;
 import piglinextraction.me.stephenminer.player.GameStats;
 import piglinextraction.me.stephenminer.player.loadout.LoadOut;
 import piglinextraction.me.stephenminer.weapons.Flashlight;
+import piglinextraction.me.stephenminer.weapons.Shield;
 
 import java.util.*;
 
@@ -154,6 +155,9 @@ public class Level {
             kit.getMeleWeapon();
             kit.getPrimaryRanged();
         }
+        Shield shield = new Shield();
+        player.getInventory().setItemInOffHand(shield.getItem());
+        Shield.shields.put(player.getUniqueId(),shield);
         plugin.flashlights.put(player.getUniqueId(), new Flashlight(plugin, player, 7, 1, 6));
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(40);
         player.setHealth(40);
@@ -195,6 +199,17 @@ public class Level {
         String base = "levels." + id;
         plugin.levelsFile.getConfig().set(base, null);
         plugin.levelsFile.saveConfig();
+    }
+    /**
+     *
+     *
+     * @return 0 = minor, 1 = agitated, 2 = severe
+     **/
+    public int agitationLevel(){
+        float ratio = ((float) this.getCompleted()) / this.getObjectives().size();
+        if (ratio < 0.5) return 0;
+        else if (ratio < 0.8) return 1;
+        else return 2;
     }
 
     public void monitorLevel(){
@@ -289,7 +304,8 @@ public class Level {
         for (UUID uuid : offline){
             plugin.rangedWeaponsP.remove(uuid);
             plugin.meleWeapons.remove(uuid);
-            plugin.flashlights.remove(uuid);
+            Flashlight light = plugin.flashlights.remove(uuid);
+            if (light != null) light.toggle(false);
         }
         for (UUID uuid : dead){
             if (Bukkit.getOfflinePlayer(uuid).isOnline()){
@@ -301,7 +317,8 @@ public class Level {
                 }
                 plugin.rangedWeaponsP.remove(player.getUniqueId());
                 plugin.meleWeapons.remove(player.getUniqueId());
-                plugin.flashlights.remove(player.getUniqueId());
+                Flashlight light = plugin.flashlights.remove(uuid);
+                if (light != null) light.toggle(false);
                 player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
                 player.setHealth(20);
                 player.setExp(0);

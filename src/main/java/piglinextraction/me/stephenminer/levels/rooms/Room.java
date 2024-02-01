@@ -2,7 +2,9 @@ package piglinextraction.me.stephenminer.levels.rooms;
 
 import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mob;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
@@ -32,6 +34,7 @@ public class Room {
     protected boolean editmode;
     protected boolean mark;
     protected boolean kill;
+    protected int oldAgitation;
     protected final piglinextraction.me.stephenminer.levels.Level level;
     protected List<Mob> fromNodes;
     public Room(PiglinExtraction plugin, String id, Location corner1, Location corner2, piglinextraction.me.stephenminer.levels.Level level){
@@ -76,10 +79,11 @@ public class Room {
         for (Locker locker : lockers){
             locker.fillInventory();
         }
+        updateInRoom();
     }
     public void unload(){
         Bukkit.broadcastMessage(id);
-
+        mark = true;
         for (Locker locker : lockers){
             locker.clearInventory();
         }
@@ -148,6 +152,29 @@ public class Room {
                 }
             }
         }
+    }
+
+    private Set<UUID> inRoom;
+
+    private void updateInRoom(){
+        mark = false;
+        inRoom = new HashSet<>();
+        World world = corner1.getWorld();
+        BoundingBox box = BoundingBox.of(corner1.getBlock().getLocation().clone().add(0.5,0.5,0.5), corner2.getBlock().getLocation().add(0.5,0.5,0.5));
+        new BukkitRunnable(){
+            @Override
+            public void run(){
+                if (!level.isStarted() || mark){
+                    this.cancel();
+                    return;
+                }
+                Collection<Entity> near = world.getNearbyEntities(box);
+                inRoom.clear();
+                for (Entity e : near){
+                    if (e instanceof Player p) inRoom.add(p.getUniqueId());
+                }
+            }
+        }.runTaskTimer(plugin,1,10);
     }
 
     public void getOutline(){

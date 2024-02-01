@@ -57,9 +57,7 @@ public class Horde {
 
     public void save(){
         String path = "hordes." + id;
-        for (SpawnNode node : nodes){
-            saveNode(node);
-        }
+        saveNodes();
         saveTrigger();
         plugin.hordesFile.saveConfig();
     }
@@ -73,9 +71,12 @@ public class Horde {
     private void saveNode(SpawnNode node){
         String sLoc = plugin.fromBlockLoc(node.getLoc());
         String path = "hordes." + id + ".nodes." + sLoc;
-        List<String> sClasses = node.getTypes().stream().map(Class::getName).toList();
-        plugin.hordesFile.getConfig().set(path + ".types", sClasses);
-        plugin.hordesFile.getConfig().set(path + ".toSpawn", node.getTospawn());
+
+        plugin.hordesFile.saveConfig();
+    }
+    private void saveNodes(){
+        List<String> toSave = nodes.stream().map(SpawnNode::toString).toList();
+        plugin.hordesFile.getConfig().set("hordes." + id + ".nodes",toSave);
         plugin.hordesFile.saveConfig();
     }
 
@@ -105,19 +106,9 @@ public class Horde {
         String path = "hordes." + id + ".nodes";
         if (!plugin.hordesFile.getConfig().contains(path)) return null;
         Horde horde = new Horde(id);
-        Set<String> section = plugin.hordesFile.getConfig().getConfigurationSection(path).getKeys(false);
-        for (String key : section){
-            Location loc = plugin.fromString(key);
-            List<String> sClasses = plugin.hordesFile.getConfig().getStringList(path + "." + key + ".types");
-            List<Class<? extends PiglinEntity>> types = new ArrayList<>();
-            try {
-                for (String entry : sClasses){
-                    Class<? extends PiglinEntity> clazz = (Class<? extends PiglinEntity>) Class.forName(entry);
-                    types.add(clazz);
-                }
-            }catch (Exception e){}
-            int toSpawn = plugin.hordesFile.getConfig().getInt(path + "." + key + ".toSpawn");
-            SpawnNode node = new SpawnNode(loc, toSpawn, types);
+        List<String> sNodes = plugin.hordesFile.getConfig().getStringList(path);
+        for (String entry : sNodes){
+            SpawnNode node = SpawnNode.parseNode(entry);
             horde.addNode(node);
         }
         String triggerString = plugin.hordesFile.getConfig().getString("hordes." + id + ".trigger");

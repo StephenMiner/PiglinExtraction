@@ -5,25 +5,22 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import piglinextraction.me.stephenminer.PiglinExtraction;
 import piglinextraction.me.stephenminer.Rotation;
-import piglinextraction.me.stephenminer.mobs.PiglinEntity;
-import piglinextraction.me.stephenminer.mobs.PiglinType;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Blaze extends PiglinEntity {
+public class BlazeShooter extends PiglinEntity {
     private final int fireRate;
     private final int shootCD;
     private boolean attacking;
 
-    public Blaze(PiglinExtraction plugin, Location loc){
+    public BlazeShooter(PiglinExtraction plugin, Location loc){
         super(plugin, PiglinType.BLAZE,loc,0);
         fireRate = 40;
         shootCD = 2*fireRate;

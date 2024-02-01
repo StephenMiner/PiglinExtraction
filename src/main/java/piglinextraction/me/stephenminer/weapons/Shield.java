@@ -8,6 +8,7 @@ import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -56,7 +57,7 @@ public class Shield {
     }
 
     public Shield(){
-        this(8,2,20,1.05,45,10);
+        this(8,1,10,1.05,45,10);
     }
 
     private void generateItem(){
@@ -72,10 +73,22 @@ public class Shield {
         if (canBlock()){
             event.setCancelled(true);
             charges-=1;
+        }else event.setDamage(event.getDamage());
+        System.out.println(charges);
+        if (event.getEntity() instanceof Player player) {
+            if (charges < 1) {
+                player.getInventory().getItemInOffHand().setType(Material.STICK);
+                player.getWorld().playSound(player.getLocation(),Sound.ITEM_SHIELD_BREAK,1,1);
+            }else player.getWorld().playSound(player.getLocation(),Sound.ITEM_SHIELD_BLOCK,1,1);
+            regenerate(player);
+            updateDurability(player);
         }
     }
 
+
+
     public void push(Player pusher){
+        if (!canPush()) return;
         Location loc = pusher.getEyeLocation();
         World world = pusher.getWorld();
         double pitch = (loc.getPitch()) * 0.017453292F;
@@ -83,7 +96,10 @@ public class Shield {
         Rotation rotation = new Rotation();
         Set<UUID> hitEntities = new HashSet<>();
         world.spawnParticle(Particle.SWEEP_ATTACK,loc.clone().add(loc.getDirection()),1);
-        for (double radius = 0; radius <= 1.5; radius+=0.5) {
+        charges-=pushCost;
+        if (charges < 1) item.setType(Material.STICK);
+        regenerate(pusher);
+        for (double radius = 0; radius <= 2; radius+=0.5) {
             for (double angle = 0; angle <= Math.PI; angle += Math.PI / 8) {
                 double x = radius * Math.cos(angle);
                 double z = radius * Math.sin(angle);
@@ -141,10 +157,19 @@ public class Shield {
         }.runTaskTimer(plugin,0,1);
     }
 
+    private void updateDurability(Player player){
+        ItemStack item = player.getInventory().getItemInOffHand();
+        if (item.getType() == Material.SHIELD){
+            Damageable meta = (Damageable) item.getItemMeta();
+            meta.setDamage((int)(item.getType().getMaxDurability() * (1 - (double)charges/maxCharge)));
+            item.setItemMeta(meta);
+        }
+    }
+
 
 
     private int regenCd;
-    private void regenerate(){
+    private void regenerate(Player player){
         regenCd = regenCooldown;
         if (regenerating) return;
         regenerating = true;
@@ -161,6 +186,8 @@ public class Shield {
                     if (count >= regen){
                         count = 0;
                         charges++;
+                        player.getInventory().getItemInOffHand().setType(Material.SHIELD);
+                        updateDurability(player);
                     }
                     count++;
                 }else regenCd--;
@@ -168,9 +195,12 @@ public class Shield {
         }.runTaskTimer(plugin, 1, 1);
     }
 
+    private void updateItem(){
+    }
 
 
     public boolean canBlock(){ return charges > 0; }
+    public boolean canPush(){ return charges > 1; }
 
     public ItemStack getItem(){ return item;}
 

@@ -1,14 +1,15 @@
 package piglinextraction.me.stephenminer.mobs.hordes;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Pig;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import piglinextraction.me.stephenminer.PiglinExtraction;
 import piglinextraction.me.stephenminer.mobs.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.HashSet;
+import java.util.logging.Level;
 
 /**
  * A componant for the horde class specifically
@@ -17,15 +18,17 @@ public class SpawnNode {
     private final PiglinExtraction plugin;
     private final Location loc;
     private final int toSpawn;
+    private final int spawnDelay;
     private final List<Class<? extends PiglinEntity>> types;
     private final Set<PiglinEntity> spawned;
 
 
-    public SpawnNode(Location loc, int toSpawn, Class<? extends PiglinEntity>... entities){
-        this(loc, toSpawn, Arrays.asList(entities));
+    public SpawnNode(Location loc, int toSpawn,int delay, Class<? extends PiglinEntity>... entities){
+        this(loc, toSpawn, delay, Arrays.asList(entities));
     }
-    public SpawnNode(Location loc, int toSpawn, List<Class<? extends PiglinEntity>> entities){
+    public SpawnNode(Location loc, int toSpawn, int delay,List<Class<? extends PiglinEntity>> entities){
         this.plugin = PiglinExtraction.getPlugin(PiglinExtraction.class);
+        this.spawnDelay = delay;
         this.types = entities;
         this.loc = loc;
         this.toSpawn = toSpawn;
@@ -33,12 +36,22 @@ public class SpawnNode {
     }
 
     public void spawn(){
-        int index;
-        for (int i = 0; i < toSpawn; i++){
-            index = ThreadLocalRandom.current().nextInt(types.size());
-            Class<? extends PiglinEntity> clazz = types.get(index);
-            spawnEntity(clazz);
-        }
+
+        int i = 0;
+        new BukkitRunnable(){
+            int index;
+            @Override
+            public void run(){
+                if (i > toSpawn){
+                    this.cancel();
+                    return;
+                }
+                index = ThreadLocalRandom.current().nextInt(types.size());
+                Class<? extends PiglinEntity> clazz = types.get(index);
+                spawnEntity(clazz);
+
+            }
+        }.runTaskTimer(plugin,1,spawnDelay);
     }
 
 
@@ -70,4 +83,32 @@ public class SpawnNode {
     public int getTospawn(){ return toSpawn; }
     public List<Class<? extends PiglinEntity>> getTypes(){ return types; }
     public Set<PiglinEntity> getSpawned(){ return spawned; }
+
+    public String toString(){
+        StringBuilder out = new StringBuilder(plugin.fromLoc(loc) + "/" + toSpawn + "/" + spawnDelay + "/");
+        for (Class<? extends PiglinEntity> clazz : types){
+            out.append(clazz.getName()).append("/");
+        }
+        out.deleteCharAt(out.length());
+        return out.toString();
+    }
+
+    public static SpawnNode parseNode(String str){
+        PiglinExtraction plugin = JavaPlugin.getPlugin(PiglinExtraction.class);
+        String[] split = str.split("/");
+        Location loc = plugin.fromString(split[0]);
+        int toSpawn = Integer.parseInt(split[1]);
+        int spawnDelay = Integer.parseInt(split[2]);
+        List<Class<? extends PiglinEntity>> types = new ArrayList<>();
+        for (int i = 3; i < split.length; i++){
+            try {
+                Class<? extends PiglinEntity> clazz = (Class<? extends PiglinEntity>) Class.forName(split[i]);
+                types.add(clazz);
+            }catch (ClassNotFoundException e){
+                e.printStackTrace();
+                plugin.getLogger().log(Level.WARNING,split[i] + " isnt a valid PiglinEntity class name");
+            }
+        }
+        return new SpawnNode(loc,toSpawn,spawnDelay,types);
+    }
 }
