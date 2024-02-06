@@ -7,7 +7,8 @@ public enum PiglinType {
     GUARD(EntityType.PIGLIN, "Guard", 1),
     NECROMANCER(EntityType.PIGLIN, "Necromancer", 2),
     KNIGHT(EntityType.PIGLIN,"Knight",3),
-    BLAZE(EntityType.BLAZE,"Blaze",4);
+    BLAZE(EntityType.BLAZE,"Blaze",4),
+    WARLORD(EntityType.PIGLIN_BRUTE, "Warlord", 5);
 
     private final EntityType type;
     private final String name;
