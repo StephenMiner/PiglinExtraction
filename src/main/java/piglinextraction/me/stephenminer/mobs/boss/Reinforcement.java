@@ -66,23 +66,43 @@ public class Reinforcement {
         return out.toString();
     }
 
-    private List<Location> parseLocs(String sLocs){
+    /**
+     *
+     * @param str formatted as "loc1/loc2/..."
+     * @return list of Locations
+     */
+    private List<Location> parseLocs(String str){
+        String[] unbox = str.split("/");
         List<Location> locs = new ArrayList<>();
-        String[] unbox = sLocs.split("/");
         for (String entry : unbox){
-            locs.add(plugin.fromString(entry));
+            try {
+                locs.add(plugin.fromString(entry));
+            }catch (Exception e){
+                e.printStackTrace();
+                plugin.getLogger().warning("Failed to load location for a warlord encounter!");
+                plugin.getLogger().warning("Offending string: " + entry);
+            }
         }
         return locs;
     }
-    private List<Class<? extends PiglinEntity>> parseTypes(String sTypes){
+
+    /**
+     *
+     * @param str formatted as "type1,type2,..."
+     * @return List of PiglinEntity types
+     */
+    private List<Class<? extends PiglinEntity>> parseTypes(String str){
+        String[] unbox = str.split(",");
         List<Class<? extends PiglinEntity>> types = new ArrayList<>();
-        String[] unbox = sTypes.split(",");
-        for (String entry : unbox) {
-            try {
-                Class<? extends PiglinEntity> clazz = (Class<? extends PiglinEntity>) Class.forName(entry);
-                types.add(clazz);
+
+        for (String entry : unbox){
+            try{
+                Class<? extends PiglinEntity> type = (Class<? extends PiglinEntity>) Class.forName(entry);
+                types.add(type);
             }catch (Exception e){
-                plugin.getLogger().log(Level.WARNING,"Failed to parse type " + entry + " for Reinforcements object. " + entry + " is not a valid Piglin Class Name!");
+                e.printStackTrace();
+                plugin.getLogger().warning("Failed to load PiglinEntity type for warlord encounter");
+                plugin.getLogger().warning("Offending String: " + entry);
             }
         }
         return types;

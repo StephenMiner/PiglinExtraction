@@ -14,6 +14,7 @@ import piglinextraction.me.stephenminer.levels.rooms.Door;
 import piglinextraction.me.stephenminer.levels.rooms.Room;
 import piglinextraction.me.stephenminer.levels.spawners.Node;
 import piglinextraction.me.stephenminer.mobs.PiglinEntity;
+import piglinextraction.me.stephenminer.mobs.boss.encounters.Encounter;
 import piglinextraction.me.stephenminer.mobs.hordes.Horde;
 import piglinextraction.me.stephenminer.player.DeathMarker;
 import piglinextraction.me.stephenminer.player.GameStats;
@@ -36,6 +37,7 @@ public class Level {
     private List<UUID> dead;
     private List<DeathMarker> markers;
     private List<Objective> objectives;
+    private List<Encounter> encounters;
     private List<Horde> hordes;
     private Location spawn;
     private Location lobby;
@@ -52,6 +54,7 @@ public class Level {
     public Level(PiglinExtraction plugin, String id, String name, Location spawn, Location lobby, List<Room> rooms){
         if (rooms == null) this.rooms = new ArrayList<>();
         else this.rooms = rooms;
+        encounters = new ArrayList<>();
         players = new ArrayList<>();
         offline = new ArrayList<>();
         dead = new ArrayList<>();
@@ -72,6 +75,7 @@ public class Level {
     public Level(PiglinExtraction plugin, String id, String name, Material icon, Location spawn, List<Room> rooms){
         if (rooms == null) this.rooms = new ArrayList<>();
         else this.rooms = rooms;
+        encounters = new ArrayList<>();
         players = new ArrayList<>();
         offline = new ArrayList<>();
         dead = new ArrayList<>();
@@ -92,6 +96,7 @@ public class Level {
     public Level(PiglinExtraction plugin, String id, String name, List<Room> rooms){
         if (rooms == null) this.rooms = new ArrayList<>();
         else this.rooms = rooms;
+        encounters = new ArrayList<>();
         players = new ArrayList<>();
         offline = new ArrayList<>();
         dead = new ArrayList<>();
@@ -416,14 +421,9 @@ public class Level {
     public GameStats getStats(){
         return stats;
     }
+    public List<Encounter> getEncounters(){ return encounters; }
 
-    public static Level fromId(String id){
-        for (Level level : Level.levels){
-            if (level.getId().equalsIgnoreCase(id))
-                return level;
-        }
-        return null;
-    }
+
     public void addHorde(Horde horde){
         hordes.add(horde);
     }
@@ -480,6 +480,14 @@ public class Level {
             return level;
         }
         plugin.getLogger().log(java.util.logging.Level.WARNING, "Attempted to load level " + lvl + " but couldn't find entry in config file");
+        return null;
+    }
+
+    public static Level fromId(String id){
+        for (Level level : Level.levels){
+            if (level.getId().equalsIgnoreCase(id))
+                return level;
+        }
         return null;
     }
 }

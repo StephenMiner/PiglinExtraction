@@ -10,9 +10,11 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import piglinextraction.me.stephenminer.PiglinExtraction;
 import piglinextraction.me.stephenminer.containers.Locker;
+import piglinextraction.me.stephenminer.events.custom.RoomEnterEvent;
 import piglinextraction.me.stephenminer.levels.spawners.Node;
 import piglinextraction.me.stephenminer.levels.spawners.Repeater;
 import piglinextraction.me.stephenminer.mobs.PiglinType;
+import piglinextraction.me.stephenminer.mobs.boss.encounters.Encounter;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -65,6 +67,12 @@ public class Room {
         Bukkit.broadcastMessage("Room object 1");
     }
 
+
+    public void listenEncounters(){
+        for (Encounter encounter : level.getEncounters()){
+            encounter
+        }
+    }
 
 
     public boolean protect(Location loc){
@@ -157,8 +165,10 @@ public class Room {
     private Set<UUID> inRoom;
 
     private void updateInRoom(){
+        Room room = this;
         mark = false;
         inRoom = new HashSet<>();
+        Set<UUID> old = new HashSet<>();
         World world = corner1.getWorld();
         BoundingBox box = BoundingBox.of(corner1.getBlock().getLocation().clone().add(0.5,0.5,0.5), corner2.getBlock().getLocation().add(0.5,0.5,0.5));
         new BukkitRunnable(){
@@ -169,9 +179,15 @@ public class Room {
                     return;
                 }
                 Collection<Entity> near = world.getNearbyEntities(box);
+                old.clear();
+                old.addAll(inRoom);
                 inRoom.clear();
                 for (Entity e : near){
-                    if (e instanceof Player p) inRoom.add(p.getUniqueId());
+                    if (e instanceof Player p) {
+                        if (!old.contains(p.getUniqueId()))
+                            Bukkit.getServer().getPluginManager().callEvent(new RoomEnterEvent(room, p));
+                        inRoom.add(p.getUniqueId());
+                    }
                 }
             }
         }.runTaskTimer(plugin,1,10);

@@ -4,8 +4,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import piglinextraction.me.stephenminer.PiglinExtraction;
 
 public class Encounter {
-    private final PiglinExtraction plugin;
-    private final String id;
+    protected final PiglinExtraction plugin;
+    protected final String id;
 
     public Encounter(String id){
         this.plugin = JavaPlugin.getPlugin(PiglinExtraction.class);
