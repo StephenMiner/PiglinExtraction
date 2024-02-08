@@ -6,6 +6,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BoundingBox;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.levels.builders.HordeBuilder;
 import piglinextraction.me.stephenminer.mobs.hordes.Horde;
 
 import java.util.ArrayList;
@@ -215,7 +216,7 @@ public class Door {
                 boolean spaces = plugin.roomsFile.getConfig().getBoolean(path + ".do-spaces");
                 if (jamTime > 0){
                     String hordeId = plugin.roomsFile.getConfig().getString(path + ".horde");
-                    Horde horde = Horde.fromId(plugin, hordeId);
+                    Horde horde = new HordeBuilder(hordeId).build();
                     JammedDoor door = new JammedDoor(plugin, id, room, loc1, loc2, jamTime, horde);
                     door.setDoSpaces(spaces);
                     door.save();

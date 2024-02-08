@@ -34,6 +34,7 @@ public class PiglinKnight extends PiglinEntity{
         Material mat = ThreadLocalRandom.current().nextBoolean() ? Material.GOLDEN_SWORD : Material.GOLDEN_AXE;
         equipment.setItemInMainHand(new ItemStack(mat));
         equipment.setItemInOffHand(new ItemStack(Material.SHIELD));
+        target();
     }
 
 

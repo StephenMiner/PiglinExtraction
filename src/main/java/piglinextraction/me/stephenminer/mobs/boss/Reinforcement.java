@@ -3,12 +3,12 @@ package piglinextraction.me.stephenminer.mobs.boss;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.levels.Level;
 import piglinextraction.me.stephenminer.mobs.PiglinEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
 
 public class Reinforcement {
     private PiglinExtraction plugin;
@@ -42,10 +42,11 @@ public class Reinforcement {
     }
 
 
-    public void reinforce(){
+    public void reinforce(Level level){
         for (Location loc : locs){
             try {
                 PiglinEntity entity = types.get(ThreadLocalRandom.current().nextInt(types.size())).getConstructor(PiglinExtraction.class, Location.class).newInstance(plugin, loc);
+                if (level != null) level.getSpawned().put(entity.getMob().getUniqueId(),entity);
             }catch (Exception e){ e.printStackTrace(); }
         }
     }

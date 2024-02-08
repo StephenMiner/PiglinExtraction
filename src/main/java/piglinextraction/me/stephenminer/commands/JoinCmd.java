@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
+import piglinextraction.me.stephenminer.levels.builders.LevelBuilder;
 
 import java.lang.String;
 import java.util.List;
@@ -44,7 +45,7 @@ public class JoinCmd implements CommandExecutor, TabCompleter{
                                 Level level = Level.fromId(args[1]);
                                 if (level == null){
                                     Bukkit.broadcastMessage("Creating level object");
-                                    level = Level.fromString(plugin, args[1]);
+                                    level = new LevelBuilder(args[1]).build();
                                     if (level == null){
                                         sendInventory(player, group);
                                         return false;

@@ -428,60 +428,6 @@ public class Level {
         hordes.add(horde);
     }
 
-    public static Level fromString(PiglinExtraction plugin, String lvl){
-        if (plugin.levelsFile.getConfig().contains("levels." + lvl)){
-            String base = "levels." + lvl;
-            Location spawn = null;
-            Location lobby = null;
-            if (plugin.levelsFile.getConfig().contains(base + ".spawn"))
-                spawn = plugin.fromString(plugin.levelsFile.getConfig().getString(base + ".spawn"));
-            if (plugin.levelsFile.getConfig().contains(base + ".lobby"))
-                lobby = plugin.fromString(plugin.levelsFile.getConfig().getString(base + ".lobby"));
-            String name = plugin.levelsFile.getConfig().getString(base + ".name");
-            Material mat = Material.DIRT;
-            if (plugin.levelsFile.getConfig().contains(base + ".mat"))
-                mat = Material.matchMaterial(plugin.levelsFile.getConfig().getString(base + ".mat"));
-            Level level = new Level(plugin,lvl,name,mat,spawn,null);
-            if (plugin.levelsFile.getConfig().contains("levels." + lvl + ".rooms")) {
-                List<String> roomNames = plugin.levelsFile.getConfig().getStringList(base + ".rooms");
-                List<Room> rooms = new ArrayList<>();
-                for (String roomName : roomNames) {
-                    try{
-                        level.addRoom(Room.fromString(plugin, level, roomName));
-                    }catch (Exception e){
-                        plugin.getLogger().log(java.util.logging.Level.WARNING, "Error loading room " + roomName);
-                    }
-                }
-
-            }
-            if (lobby != null) level.setLobby(lobby);
-            if (plugin.levelsFile.getConfig().contains("levels." + lvl + ".objs")){
-                Set<String> objectiveIds = plugin.levelsFile.getConfig().getConfigurationSection("levels." + lvl + ".objs").getKeys(false);
-                for (String objId : objectiveIds){
-                    Objective obj = switch (objId){
-                        case "RUNE_COLLECTION" -> new RuneObj(plugin);
-                        default -> null;
-                    };
-                    if (obj == null) continue;
-                    List<String> spawns = plugin.levelsFile.getConfig().getStringList("levels." + lvl + ".objs." + objId + ".spawns");
-                    for (String entry : spawns){
-                        obj.addSpawn(plugin.fromString(entry));
-                    }
-                    level.addObjective(obj);
-                }
-            }
-            if (plugin.levelsFile.getConfig().contains("levels." + lvl + ".hordes")){
-                Set<String> hordeIds = plugin.levelsFile.getConfig().getConfigurationSection("levels." + lvl + ".hordes").getKeys(false);
-                for (String hordeId : hordeIds){
-                    Horde horde = Horde.fromId(plugin, hordeId);
-                    level.addHorde(horde);
-                }
-            }
-            return level;
-        }
-        plugin.getLogger().log(java.util.logging.Level.WARNING, "Attempted to load level " + lvl + " but couldn't find entry in config file");
-        return null;
-    }
 
     public static Level fromId(String id){
         for (Level level : Level.levels){

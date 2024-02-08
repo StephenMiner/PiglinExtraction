@@ -16,6 +16,7 @@ import piglinextraction.me.stephenminer.events.*;
 import piglinextraction.me.stephenminer.events.custom.PlayerNoiseEvent;
 import piglinextraction.me.stephenminer.levels.Level;
 import piglinextraction.me.stephenminer.levels.LevelGroup;
+import piglinextraction.me.stephenminer.levels.builders.LevelBuilder;
 import piglinextraction.me.stephenminer.player.DeathMarker;
 import piglinextraction.me.stephenminer.player.GameProfile;
 import piglinextraction.me.stephenminer.weapons.Flashlight;
@@ -94,6 +95,7 @@ public final class PiglinExtraction extends JavaPlugin {
         manager.registerEvents(new PlayerEvents(this), this);
         manager.registerEvents(new DoorEvents(this), this);
         manager.registerEvents(new Consumables(this), this);
+        manager.registerEvents(new EncounterEvents(),this);
     }
     private void registerCommands(){
         Testing testing = new Testing(this);
@@ -175,7 +177,7 @@ public final class PiglinExtraction extends JavaPlugin {
 
     public void loadLevels(){
         for (String key : levelsFile.getConfig().getConfigurationSection("levels").getKeys(false)){
-            Level level = Level.fromString(this, key);
+            Level level = new LevelBuilder(key).build();
         }
     }
     public void loadHub(){

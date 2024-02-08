@@ -16,6 +16,7 @@ import java.util.Set;
 
 public class LevelBuilder {
     private final String id;
+    private final String base;
     private final PiglinExtraction plugin;
     private Location spawn,lobby;
     private String name;
@@ -25,12 +26,13 @@ public class LevelBuilder {
     public LevelBuilder(String id){
         this.plugin = JavaPlugin.getPlugin(PiglinExtraction.class);
         this.id = id;
+        this.base = "levels." + id;
     }
 
 
     private boolean loadBasicLevel(){
-        if (plugin.levelsFile.getConfig().contains("levels." + id)){
-            String base = "levels." + id;
+        if (plugin.levelsFile.getConfig().contains(base)){
+
             if (plugin.levelsFile.getConfig().contains(base + ".spawn"))
                 spawn = plugin.fromString(plugin.levelsFile.getConfig().getString(base + ".spawn"));
             if (plugin.levelsFile.getConfig().contains(base + ".lobby"))
@@ -47,12 +49,59 @@ public class LevelBuilder {
     }
 
 
-    private boolean loadRooms(){}
+    private void loadRooms(){
+        if (plugin.levelsFile.getConfig().contains(base + ".rooms")) {
+            List<String> roomNames = plugin.levelsFile.getConfig().getStringList(base + ".rooms");
+            for (String roomName : roomNames) {
+                try{
+                    level.addRoom(new RoomBuilder(roomName, level).build());
+                }catch (Exception e){
+                    plugin.getLogger().log(java.util.logging.Level.WARNING, "Error loading room " + roomName);
+                }
+            }
+        }
+    }
+
+    private void loadObjectives(){
+        if (plugin.levelsFile.getConfig().contains(base + ".objs")){
+            Set<String> objectiveIds = plugin.levelsFile.getConfig().getConfigurationSection(base + ".objs").getKeys(false);
+            for (String objId : objectiveIds){
+                Objective obj = switch (objId){
+                    case "RUNE_COLLECTION" -> new RuneObj(plugin);
+                    default -> null;
+                };
+                if (obj == null) continue;
+                List<String> spawns = plugin.levelsFile.getConfig().getStringList(base + ".objs." + objId + ".spawns");
+                for (String entry : spawns){
+                    obj.addSpawn(plugin.fromString(entry));
+                }
+                level.addObjective(obj);
+            }
+        }
+    }
+
+    private void loadHorde(){
+        if (plugin.levelsFile.getConfig().contains(base + ".hordes")){
+            List<String> hordeIds = plugin.levelsFile.getConfig().getStringList(base + ".hordes");
+            for (String hordeId : hordeIds){
+                Horde horde = new HordeBuilder(hordeId).build();
+                level.addHorde(horde);
+            }
+        }
+    }
+
+    public Level build(){
+        loadBasicLevel();
+        loadRooms();
+        loadHorde();
+        loadObjectives();
+        return level;
+    }
 
 
 
 
-
+/*Reference method (Original static method)
     public static Level fromString(PiglinExtraction plugin, String lvl){
         if (plugin.levelsFile.getConfig().contains("levels." + lvl)){
             String base = "levels." + lvl;
@@ -67,18 +116,7 @@ public class LevelBuilder {
             if (plugin.levelsFile.getConfig().contains(base + ".mat"))
                 mat = Material.matchMaterial(plugin.levelsFile.getConfig().getString(base + ".mat"));
             Level level = new Level(plugin,lvl,name,mat,spawn,null);
-            if (plugin.levelsFile.getConfig().contains("levels." + lvl + ".rooms")) {
-                List<String> roomNames = plugin.levelsFile.getConfig().getStringList(base + ".rooms");
-                List<Room> rooms = new ArrayList<>();
-                for (String roomName : roomNames) {
-                    try{
-                        level.addRoom(Room.fromString(plugin, level, roomName));
-                    }catch (Exception e){
-                        plugin.getLogger().log(java.util.logging.Level.WARNING, "Error loading room " + roomName);
-                    }
-                }
 
-            }
             if (lobby != null) level.setLobby(lobby);
             if (plugin.levelsFile.getConfig().contains("levels." + lvl + ".objs")){
                 Set<String> objectiveIds = plugin.levelsFile.getConfig().getConfigurationSection("levels." + lvl + ".objs").getKeys(false);
@@ -107,4 +145,6 @@ public class LevelBuilder {
         plugin.getLogger().log(java.util.logging.Level.WARNING, "Attempted to load level " + lvl + " but couldn't find entry in config file");
         return null;
     }
+
+ */
 }

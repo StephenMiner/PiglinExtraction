@@ -12,6 +12,10 @@ public class Encounter {
         this.id = id;
     }
 
+    public boolean trigger(){
+        return true;
+    }
+
 
 
 

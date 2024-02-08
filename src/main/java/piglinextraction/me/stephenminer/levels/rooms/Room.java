@@ -15,6 +15,7 @@ import piglinextraction.me.stephenminer.levels.spawners.Node;
 import piglinextraction.me.stephenminer.levels.spawners.Repeater;
 import piglinextraction.me.stephenminer.mobs.PiglinType;
 import piglinextraction.me.stephenminer.mobs.boss.encounters.Encounter;
+import piglinextraction.me.stephenminer.mobs.boss.encounters.RoomEncounter;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -68,10 +69,15 @@ public class Room {
     }
 
 
-    public void listenEncounters(){
-        for (Encounter encounter : level.getEncounters()){
-            encounter
-        }
+    public void listenEncounters(boolean enter){
+        level.getEncounters().stream()
+                .filter(encounter -> encounter instanceof RoomEncounter roomEncounter && roomEncounter.getRoom().equals(this))
+                .forEach(encounter -> {
+                    RoomEncounter e = (RoomEncounter) encounter;
+                    if (enter){
+                        if (e.getFlag() == RoomEncounter.Flag.ON_ENTER) e.trigger();
+                    }
+                });
     }
 
 
@@ -259,52 +265,5 @@ public class Room {
     public boolean kill(){ return kill; }
 
 
-    public static Room fromString(PiglinExtraction plugin, piglinextraction.me.stephenminer.levels.Level level, String name){
-        if (!plugin.roomsFile.getConfig().contains("rooms." + name)){
-            plugin.getLogger().log(Level.WARNING, "Attempted to get room " + name + ", but the room doesn't exist in files!");
-            return null;
-        }
-        Location loc1 = plugin.fromString(plugin.roomsFile.getConfig().getString("rooms." + name + ".loc1"));
-        Location loc2 = plugin.fromString(plugin.roomsFile.getConfig().getString("rooms." + name + ".loc2"));
-        Room room = new Room(plugin, name, loc1, loc2, level);
-        if (plugin.roomsFile.getConfig().contains("rooms." + name + ".nodes")){
-            //init nodes
-            Set<String> nodeNames = plugin.roomsFile.getConfig().getConfigurationSection("rooms." + name + ".nodes").getKeys(false);
-            List<Node> nodes = new ArrayList<>();
-            for (String entry : nodeNames){
-                String base = "rooms." + name + ".nodes." + entry;
-                Location loc = plugin.fromString(entry);
-                PiglinType type = PiglinType.valueOf(plugin.roomsFile.getConfig().getString(base + ".entity"));
-                int radius = plugin.roomsFile.getConfig().getInt(base + ".radius");
-                if (plugin.roomsFile.getConfig().contains(base + ".interval")){
-                    int interval = plugin.roomsFile.getConfig().getInt(base + ".interval");
-                    nodes.add(new Repeater(plugin, loc, radius, interval, room, type));
-                }else nodes.add(new Node(plugin, loc, radius, room, type));
-            }
-            room.setNodes(nodes);
-        }
-        if (plugin.roomsFile.getConfig().contains("rooms." + name + ".lockers")){
-            Set<String> lockerNames = plugin.roomsFile.getConfig().getConfigurationSection("rooms." + name + ".lockers").getKeys(false);
-            List<Locker> lockers = new ArrayList<>();
-            for (String entry : lockerNames){
-                Location loc = plugin.fromString(entry);
-                String type = plugin.roomsFile.getConfig().getString("rooms." + name + ".lockers." + entry + ".type");
-                Material mat = Material.matchMaterial(plugin.roomsFile.getConfig().getString("rooms." + name + ".lockers." + entry + ".mat"));
-                BlockData data = Bukkit.createBlockData(plugin.roomsFile.getConfig().getString("rooms." + name + ".lockers." + entry + ".data"));
-                boolean locked = ThreadLocalRandom.current().nextBoolean();//plugin.roomsFile.getConfig().getBoolean("rooms." + name + ".lockers." + entry + ".locked");
-                lockers.add(new Locker(plugin, name, type, loc, data, mat, locked));
-            }
-            room.setLockers(lockers);
-        }
-        if (plugin.roomsFile.getConfig().contains("rooms." + name + ".doors")){
-            Set<String> doorNames = plugin.roomsFile.getConfig().getConfigurationSection("rooms." + name + ".doors").getKeys(false);
-            for (String str : doorNames){
-                Door door = Door.fromString(plugin, room.getId(), str);
-                door.resetDoor();
-                room.addDoor(door);
 
-            }
-        }
-        return room;
-    }
 }

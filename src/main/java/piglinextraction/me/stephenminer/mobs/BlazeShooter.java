@@ -16,30 +16,52 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlazeShooter extends PiglinEntity {
+    /**
+     * how many times blaze will shoot in a given attack
+     */
     private final int fireRate;
+
+    /**
+     * shooting cooldown value
+     */
     private final int shootCD;
+
+    /**
+     * whether blaze is attacking or not
+     */
     private boolean attacking;
+
+    /**
+     * tick tracker for shooting cooldown
+     */
+    private int count;
+
 
     public BlazeShooter(PiglinExtraction plugin, Location loc){
         super(plugin, PiglinType.BLAZE,loc,0);
         fireRate = 40;
         shootCD = 2*fireRate;
+
     }
 
     @Override
     public void target(){
         new BukkitRunnable(){
-            int shoot = fireRate;
             double y = mob.getLocation().getY();
-
             @Override
             public void run(){
                 y = mob.getLocation().getY();
                 if (mob.getTarget() != null) {
                     mob.getLocation().setY(y);
                 }
+                if (count>= shootCD){
+                    attack();
+                    count = 0;
+                }
+                if (!attacking) count++;
             }
         }.runTaskTimer(plugin,1,1);
+
     }
 
     private void attack(){
@@ -56,6 +78,7 @@ public class BlazeShooter extends PiglinEntity {
                 Vector vec = new Vector(x,0,z);
                 rotation.rotateAroundAxisX(vec, yaw);
                 rotation.rotateAroundAxisY(vec,pitch);
+                points.add(vec);
             }
         }
         World world = mob.getWorld();
@@ -64,6 +87,7 @@ public class BlazeShooter extends PiglinEntity {
             @Override
             public void run(){
                 if (count > fireRate){
+                    attacking = false;
                     this.cancel();
                     return;
                 }

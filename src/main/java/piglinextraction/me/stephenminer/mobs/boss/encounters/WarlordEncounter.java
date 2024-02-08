@@ -28,17 +28,17 @@ public class WarlordEncounter extends RoomEncounter{
      */
     /**
      *
-     * @param str formatted as "warlord=room=flag=spawn=loc1/loc2/loc3-type1,type2,type3=TBD"
+     * @param str formatted as "warlord=flag=spawn=loc1/loc2/loc3-type1,type2,type3=TBD"
      */
-    public WarlordEncounter(String str){
-        super("warlord");
+    public WarlordEncounter(String id, String str){
+        super(id);
         reinforcementStr = loadEssentialData(str);
     }
 
 
     /**
      *
-     * @param str formatted as "id=room=flag=loc1/loc2/loc3-type1,type2,type3=TBD"
+     * @param str formatted as "warlord=flag=loc1/loc2/loc3-type1,type2,type3=TBD"
      * @return trimmed down str only including reinforcement data
      * formatted as loc1/loc2/loc3-type1,type2,type3=loc1/loc2/...
      *
@@ -68,8 +68,14 @@ public class WarlordEncounter extends RoomEncounter{
         return out;
     }
 
-    public void activate(){
-        Warlord warlord = new Warlord(plugin,spawn,loadReinforcements(reinforcementStr));
+
+    @Override
+    public boolean trigger(){
+        if (super.trigger()) {
+            Warlord warlord = new Warlord(plugin, spawn, loadReinforcements(reinforcementStr));
+            warlord.setLevel(room.getLevel());
+            return true;
+        }else return false;
     }
 
 
