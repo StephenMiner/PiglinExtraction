@@ -3,6 +3,7 @@ package piglinextraction.me.stephenminer.levels.rooms;
 import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -100,6 +101,15 @@ public class Room {
         mark = true;
         for (Locker locker : lockers){
             locker.clearInventory();
+        }
+        BoundingBox box = BoundingBox.of(corner1,corner2);
+        Collection<Entity> entities = corner1.getWorld().getNearbyEntities(box);
+        for (Entity entity : entities){
+            if (entity instanceof Player) continue;
+            if (entity instanceof LivingEntity living){
+                living.setHealth(0);
+                living.remove();
+            }
         }
     }
 

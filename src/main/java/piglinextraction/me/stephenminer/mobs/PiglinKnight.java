@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
 
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -21,7 +22,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class PiglinKnight extends PiglinEntity{
 
     public PiglinKnight(PiglinExtraction plugin,  Location spawn) {
-        super(plugin,PiglinType.KNIGHT,spawn, 10);
+        super(plugin,PiglinType.KNIGHT, ArmorPiercing.MEDIUM,spawn, 10);
         mob.setCustomNameVisible(false);
         mob.setMetadata("knight",new FixedMetadataValue(plugin,"knight"));
         mob.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(40);
@@ -43,6 +44,10 @@ public class PiglinKnight extends PiglinEntity{
         new BukkitRunnable(){
             @Override
             public void run(){
+                if (mob.isDead()){
+                    this.cancel();
+                    return;
+                }
                 checkLight();
             }
         }.runTaskTimer(plugin,1,1);

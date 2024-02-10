@@ -9,6 +9,7 @@ import piglinextraction.me.stephenminer.levels.objectives.Objective;
 import piglinextraction.me.stephenminer.levels.objectives.RuneObj;
 import piglinextraction.me.stephenminer.levels.rooms.Room;
 import piglinextraction.me.stephenminer.mobs.boss.encounters.Encounter;
+import piglinextraction.me.stephenminer.mobs.boss.encounters.HordeRoom;
 import piglinextraction.me.stephenminer.mobs.boss.encounters.RandomHorde;
 import piglinextraction.me.stephenminer.mobs.boss.encounters.WarlordEncounter;
 import piglinextraction.me.stephenminer.mobs.hordes.Horde;
@@ -117,6 +118,7 @@ public class LevelBuilder {
         return switch (type){
             case "warlord" -> new WarlordEncounter(str);
             case "randomhorde"-> new RandomHorde(str);
+            case "horderoom" -> new HordeRoom(str);
             default -> null;
         };
     }

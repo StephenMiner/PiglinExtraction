@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import piglinextraction.me.stephenminer.PiglinExtraction;
 import piglinextraction.me.stephenminer.mobs.*;
+import piglinextraction.me.stephenminer.mobs.boss.Warlord;
 import piglinextraction.me.stephenminer.mobs.hordes.TriggerType;
 
 import java.util.*;
@@ -77,6 +78,7 @@ public class HordeCmd implements CommandExecutor, TabCompleter {
                             }
                             Location loc = player.getLocation();
                             addSpawnNode(id,loc,toSpawn, classes);
+                            player.sendMessage(ChatColor.GREEN + "Created spawn node!");
                         }catch (Exception e){
                             e.printStackTrace();
                             player.sendMessage(ChatColor.RED + "One of your arguments was invalid, please be sure to have Case matching characters!");
@@ -130,7 +132,8 @@ public class HordeCmd implements CommandExecutor, TabCompleter {
 
     private void addSpawnNode(String hordeId, Location loc, int toSpawn, List<Class<? extends PiglinEntity>> types){
         String path = "hordes." + hordeId + ".nodes." + plugin.fromBlockLoc(loc);
-        List<String> sTypes = types.stream().map(Class::getName).toList();
+        MobTranslator translator = new MobTranslator();
+        List<String> sTypes = types.stream().map(translator::fromClass).toList();
         plugin.hordesFile.getConfig().set(path + ".types", sTypes);
         plugin.hordesFile.getConfig().set(path + ".toSpawn",toSpawn);
         plugin.hordesFile.saveConfig();
@@ -251,9 +254,13 @@ public class HordeCmd implements CommandExecutor, TabCompleter {
 
     public List<String> piglinTypes(String match){
         List<String> types = new ArrayList<>();
-        types.add(PiglinGrunt.class.getName());
-        types.add(PiglinGuard.class.getName());
-        types.add(Necromancer.class.getName());
+        MobTranslator translator = new MobTranslator();
+        types.add(translator.fromClass(PiglinGrunt.class));
+        types.add(translator.fromClass(PiglinKnight.class));
+        types.add(translator.fromClass(PiglinGuard.class));
+        types.add(translator.fromClass(Necromancer.class));
+        types.add(translator.fromClass(BlazeShooter.class));
+        types.add(translator.fromClass(Warlord.class));
         return filter(types, match);
     }
 

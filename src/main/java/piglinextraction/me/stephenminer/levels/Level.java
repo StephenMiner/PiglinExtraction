@@ -137,7 +137,9 @@ public class Level {
         List<UUID> uuidList = new ArrayList<>(spawned.keySet());
         for (int i = uuidList.size()-1; i >= 0; i--){
             UUID uuid = uuidList.get(i);
-            spawned.get(uuid).getMob().setHealth(0);
+            PiglinEntity entity = spawned.get(uuid);
+            entity.getMob().setHealth(0);
+            entity.getMob().remove();
         }
         spawned.clear();
     }

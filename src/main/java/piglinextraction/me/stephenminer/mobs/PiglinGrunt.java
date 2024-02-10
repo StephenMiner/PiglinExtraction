@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
 
 import java.util.Random;
 
@@ -16,7 +17,7 @@ public class PiglinGrunt extends PiglinEntity{
     private final Random random;
 
     public PiglinGrunt(PiglinExtraction plugin, Location spawn){
-        super(plugin, PiglinType.GRUNT, spawn, 40);
+        super(plugin, PiglinType.GRUNT, ArmorPiercing.LIGHT,spawn, 40);
         lightLevel = 10;
         random = new Random();
        // mob.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20000,2));

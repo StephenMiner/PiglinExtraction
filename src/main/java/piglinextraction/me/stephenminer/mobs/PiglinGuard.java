@@ -5,11 +5,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
 
 public class PiglinGuard extends PiglinEntity{
 
     public PiglinGuard(PiglinExtraction plugin, Location spawn){
-        super(plugin, PiglinType.GUARD, spawn,1);
+        super(plugin, PiglinType.GUARD, ArmorPiercing.MEDIUM,spawn,1);
         activated = true;
         target();
     }

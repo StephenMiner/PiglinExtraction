@@ -1,6 +1,7 @@
 package piglinextraction.me.stephenminer.weapons.mele;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
@@ -14,6 +15,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import piglinextraction.me.stephenminer.PiglinExtraction;
 import piglinextraction.me.stephenminer.combat.RayTrace;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
+import piglinextraction.me.stephenminer.weapons.ranged.RangedWeapon;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -32,6 +35,7 @@ public class MeleWeapon {
     protected double attackSpeed;
     protected int hitStagger;
     protected boolean chargeStagger;
+    protected ArmorPiercing armorPierce;
 
     public MeleWeapon(PiglinExtraction plugin, Player owner) {
         this.plugin = plugin;
@@ -50,21 +54,38 @@ public class MeleWeapon {
     }
 
     public void attack(LivingEntity entity, boolean headshot,boolean blocked) {
-        double dmg = charged ? this.damage : 3;
-        if (blocked) dmg = 0;
-        double damage = charged && headshot ? dmg * (headsotMultiplier) : dmg;
+        double dmg = charged ? this.damage : this.damage/1.5;
+        if (blocked) {
+            dmg = 0;
+        }
+        double damage = headshot ? dmg * (headsotMultiplier) : dmg;
         entity.setMetadata(id, attackTag);
+        boolean needsHeadshot = needsHeadshot(entity);
+        if (needsHeadshot && !headshot){
+            damage = 0.25;
+            owner.playSound(owner, Sound.BLOCK_CHAIN_BREAK,4,1);
+        }
         entity.damage(damage, owner);
         if (entity instanceof Mob mob){
+
             need_charge:
             {
-                if (chargeStagger && !charged) break need_charge;
+                if ((needsHeadshot && !headshot) || (chargeStagger && !charged)) break need_charge;
                 else staggerEntity(mob);
             }
         }
         Bukkit.broadcastMessage("headshot: " + headshot + " charged: " + charged + " Damage: " + damage + " Base-Damage: " + this.damage);
         charged = false;
 
+    }
+    private boolean needsHeadshot(LivingEntity living){
+        if (living.hasMetadata("high-armor")){
+            return armorPierce != ArmorPiercing.HIGH;
+        }
+        if (living.hasMetadata("medium-armor")) {
+            return armorPierce != ArmorPiercing.MEDIUM && armorPierce != ArmorPiercing.HIGH;
+        }
+        return false;
     }
 
 

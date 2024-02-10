@@ -74,6 +74,7 @@ public class WarlordEncounter extends RoomEncounter{
         if (super.trigger()) {
             Warlord warlord = new Warlord(plugin, spawn, loadReinforcements(reinforcementStr));
             warlord.setLevel(room.getLevel());
+            room.getLevel().getSpawned().put(warlord.getMob().getUniqueId(),warlord);
             return true;
         }else return false;
     }

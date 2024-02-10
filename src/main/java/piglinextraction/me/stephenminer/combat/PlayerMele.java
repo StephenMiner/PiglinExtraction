@@ -49,7 +49,7 @@ public class PlayerMele implements Listener {
             try {
                 Entity etity = result.getHitEntity();
                 if (etity instanceof LivingEntity livingEntity) {
-                    boolean headshot = result.getHitPosition().toLocation(world).getY() - livingEntity.getLocation().getY() > 1.6d;
+                    boolean headshot = result.getHitPosition().toLocation(world).getY() - livingEntity.getLocation().getY() > 1.55d;
                     if (item != null && compareItems(item, weapon.getItem())) {
                         // Bukkit.broadcastMessage("difference: " + (result.getHitPosition().toLocation(world).getY() - livingEntity.getLocation().getY()));
                         Bukkit.broadcastMessage("new cooldown: " + player.getAttackCooldown());
@@ -61,7 +61,7 @@ public class PlayerMele implements Listener {
         }
     }
     private boolean checkBackShot(Entity entity, Entity attacker){
-        if (entity.hasMetadata("knight") && entity instanceof Mob mob){
+        if (entity.hasMetadata("medium-armor") && entity instanceof Mob mob){
             ItemStack offhand = mob.getEquipment().getItemInOffHand();
             if (offhand.getType() != Material.SHIELD) return true;
             double dYaw = validateAngle(attacker.getLocation().getYaw());

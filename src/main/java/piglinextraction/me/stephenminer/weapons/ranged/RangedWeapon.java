@@ -12,6 +12,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import piglinextraction.me.stephenminer.PiglinExtraction;
 import piglinextraction.me.stephenminer.events.custom.PlayerNoiseEvent;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -40,6 +41,7 @@ public class RangedWeapon {
 
     protected double projDmg;
     protected float headshotMultiplier;
+    protected ArmorPiercing armorPierce;
 
     protected FixedMetadataValue attackTag;
 
@@ -132,9 +134,26 @@ public class RangedWeapon {
         double dmg = headshot ? this.projDmg * headshotMultiplier : this.projDmg;
         entity.setMetadata(projId, attackTag);
         if (projectile.getShooter() instanceof Player player) {
+
+            if (needsHeadshot(entity) && !headshot) {
+                dmg = 0.5;
+                player.playSound(player,Sound.BLOCK_CHAIN_BREAK,4,1);
+            }
             entity.damage(dmg, player);
             Bukkit.broadcastMessage("val: " + headshot + " Damage: " + dmg + " Base-Damage: " + this.projDmg);
         }
+    }
+
+    private boolean needsHeadshot(LivingEntity living){
+        if (living.hasMetadata("high-armor")){
+            if (armorPierce == ArmorPiercing.HIGH)return false;
+            else return true;
+        }
+        if (living.hasMetadata("medium-armor")) {
+            if (armorPierce == ArmorPiercing.MEDIUM || armorPierce == ArmorPiercing.HIGH) return false;
+            else return true;
+        }
+        return false;
     }
 
     public void showCooldown(){
@@ -206,4 +225,6 @@ public class RangedWeapon {
             }
         return false;
     }
+
+
 }

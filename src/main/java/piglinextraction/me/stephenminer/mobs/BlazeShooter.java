@@ -11,6 +11,7 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import piglinextraction.me.stephenminer.PiglinExtraction;
 import piglinextraction.me.stephenminer.Rotation;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -38,7 +39,7 @@ public class BlazeShooter extends PiglinEntity {
 
 
     public BlazeShooter(PiglinExtraction plugin, Location loc){
-        super(plugin, PiglinType.BLAZE,loc,0);
+        super(plugin, PiglinType.BLAZE, ArmorPiercing.LIGHT,loc,0);
         fireRate = 40;
         shootCD = 2*fireRate;
 
@@ -50,6 +51,10 @@ public class BlazeShooter extends PiglinEntity {
             double y = mob.getLocation().getY();
             @Override
             public void run(){
+                if (mob.isDead()){
+                    this.cancel();
+                    return;
+                }
                 y = mob.getLocation().getY();
                 if (mob.getTarget() != null) {
                     mob.getLocation().setY(y);

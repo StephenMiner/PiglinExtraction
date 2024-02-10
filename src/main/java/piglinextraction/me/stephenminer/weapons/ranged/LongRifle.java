@@ -10,6 +10,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class LongRifle extends RangedWeapon{
         pierce = 2;
         item = longRifle();
         giveItem();
+        armorPierce = ArmorPiercing.HIGH;
     }
 
     @Override

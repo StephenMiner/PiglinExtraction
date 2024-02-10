@@ -14,6 +14,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Necromancer extends PiglinEntity {
     private final List<Zombie> zombies;
     public Necromancer(PiglinExtraction plugin, Location spawn){
-        super(plugin, PiglinType.NECROMANCER, spawn, 60);
+        super(plugin, PiglinType.NECROMANCER, ArmorPiercing.LIGHT,spawn, 60);
         lightLevel = 6;
         zombies = new ArrayList<>();
         equip();

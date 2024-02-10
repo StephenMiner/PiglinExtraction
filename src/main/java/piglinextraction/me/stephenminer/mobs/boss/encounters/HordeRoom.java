@@ -21,7 +21,7 @@ public class HordeRoom extends RoomEncounter{
     private int cooldown;
 
     /**
-     * @param str formatted as "horderoom=room=cooldown=horde1%horde2%horde3"
+     * @param str formatted as "horderoom=room=flag=open-doors=cooldown=horde1%horde2%horde3"
      * Cooldown should be -1 if you don't wish this to be repeatable.
      * Also note that cooldown should be written as if it were seconds, it will be converted into ticks for this class.
      */
@@ -32,17 +32,19 @@ public class HordeRoom extends RoomEncounter{
     }
 
     /**
-     * @param str formatted as "horderoom=room=open-doors=cooldown=horde1%horde2%horde3%..."
+     * @param str formatted as "horderoom=room=flag=open-doors=cooldown=horde1%horde2%horde3%..."
      * Note that open-doors should be true/false value. If true, when horde is triggered,
      * doors associated with the room will open
      */
     private void loadBasicData(String str){
         String[] split = str.split("=");
         this.room = Room.BY_IDS.getOrDefault(split[1], null);
+        this.flag = Flag.valueOf(split[2]);
+        this.openDoors = Boolean.parseBoolean(split[3]);
         if (room == null) plugin.getLogger().warning("For some reason room with id " + split[1] + " doesn't exist at the time of encounter activation!");
 
-        cooldown = Integer.parseInt(split[2]);
-        loadHordes(split[3]);
+        cooldown = Integer.parseInt(split[4])*20;
+        loadHordes(split[5]);
     }
 
     /**

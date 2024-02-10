@@ -9,11 +9,13 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import piglinextraction.me.stephenminer.PiglinExtraction;
 import piglinextraction.me.stephenminer.levels.Level;
 import piglinextraction.me.stephenminer.mobs.PiglinEntity;
 import piglinextraction.me.stephenminer.mobs.PiglinType;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,13 +40,14 @@ public class Warlord extends PiglinEntity {
     }
 
     public Warlord(PiglinExtraction plugin, Location spawn, List<Reinforcement> reinforcements) {
-        super(plugin, PiglinType.WARLORD, spawn, 10);
+        super(plugin, PiglinType.WARLORD, ArmorPiercing.HIGH,spawn, 10);
         this.reinforcements = reinforcements;
         reinforceInt = 1*60*20;
         reinforceUses = 4;
         count = reinforceInt;
-        mob.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(900);
-        mob.setHealth(900);
+        mob.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(450);
+        mob.setHealth(450);
+        mob.setMetadata("medium-armor", new FixedMetadataValue(plugin,"medium-armor"));
         ((PiglinBrute) mob).setImmuneToZombification(true);
         equip();
         target();
@@ -60,11 +63,12 @@ public class Warlord extends PiglinEntity {
     @Override
     public void target() {
         new BukkitRunnable(){
-
-
-
             @Override
             public void run(){
+                if (mob.isDead()){
+                    this.cancel();
+                    return;
+                }
                 checkLight();
                 if (!activated) return;
                 if (count >= reinforceInt && uses < reinforceUses){

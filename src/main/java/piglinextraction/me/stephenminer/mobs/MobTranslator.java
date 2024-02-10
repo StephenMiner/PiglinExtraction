@@ -13,7 +13,7 @@ public class MobTranslator {
 
 
     public Class<? extends PiglinEntity> parseString(String str){
-        str = str.toString();
+        str = str.toLowerCase();
         return switch (str){
             case "warlord" -> Warlord.class;
             case "piglingrunt", "grunt" -> PiglinGrunt.class;
@@ -23,5 +23,15 @@ public class MobTranslator {
             case "piglinguard","guard" -> PiglinGuard.class;
             default -> null;
         };
+    }
+
+    public String fromClass(Class<? extends  PiglinEntity> clazz){
+        if (clazz.equals(PiglinGrunt.class)) return "grunt";
+        if (clazz.equals(PiglinKnight.class)) return "knight";
+        if (clazz.equals(BlazeShooter.class)) return "blaze";
+        if (clazz.equals(Necromancer.class)) return "necromancer";
+        if (clazz.equals(PiglinGuard.class)) return "guard";
+        if (clazz.equals(Warlord.class)) return "warlord";
+        return null;
     }
 }

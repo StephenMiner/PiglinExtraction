@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import piglinextraction.me.stephenminer.PiglinExtraction;
 import piglinextraction.me.stephenminer.levels.Level;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,10 +39,13 @@ public class PiglinEntity{
 
     protected LivingEntity target;
     protected List<UUID> playerTargetWhitelist;
+    protected ArmorPiercing armor;
 
 
-    public PiglinEntity(PiglinExtraction plugin, PiglinType type, Location spawn, int lightActivation){
+    public PiglinEntity(PiglinExtraction plugin, PiglinType type, ArmorPiercing armor, Location spawn, int lightActivation){
+        this.armor = armor;
         mob = (Mob) spawn.getWorld().spawnEntity(spawn, type.getType());
+        mob.setMetadata(armor.tag(),armor.data());
         this.lightActivation = lightActivation;
         playerTargetWhitelist = new ArrayList<>();
         if (mob instanceof Piglin piglin){

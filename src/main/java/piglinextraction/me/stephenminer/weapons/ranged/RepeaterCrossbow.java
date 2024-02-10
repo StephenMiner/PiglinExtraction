@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
 import piglinextraction.me.stephenminer.weapons.ranged.RangedWeapon;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class RepeaterCrossbow extends RangedWeapon {
         headshotMultiplier = 4.5f;
         pierce = 0;
         giveItem();
+        armorPierce = ArmorPiercing.MEDIUM;
 
     }
 

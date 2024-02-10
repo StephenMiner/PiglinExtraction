@@ -50,7 +50,10 @@ public class Reinforcement {
             try {
                 System.out.println(22);
                 PiglinEntity entity = types.get(ThreadLocalRandom.current().nextInt(types.size())).getConstructor(PiglinExtraction.class, Location.class).newInstance(plugin, loc);
-                if (level != null) level.getSpawned().put(entity.getMob().getUniqueId(),entity);
+                if (level != null) {
+                    level.getSpawned().put(entity.getMob().getUniqueId(),entity);
+                    System.out.println(33);
+                }
             }catch (Exception e){ e.printStackTrace(); }
         }
     }
