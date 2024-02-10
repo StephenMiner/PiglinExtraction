@@ -48,6 +48,10 @@ public class PiglinEntity{
             piglin.setImmuneToZombification(true);
             piglin.setAdult();
         }
+        if (mob instanceof PiglinBrute brute){
+            brute.setAdult();
+            brute.setImmuneToZombification(true);
+        }
         this.type = type;
         this.plugin = plugin;
     }

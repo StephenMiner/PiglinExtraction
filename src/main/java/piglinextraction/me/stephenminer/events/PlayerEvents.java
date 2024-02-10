@@ -375,7 +375,7 @@ public class PlayerEvents implements Listener{
                                 }
                             }
                             level.getStats().addRevived(reviving.getUniqueId(), 1);
-                            for (int i = plugin.markers.size(); i >= 0; i--){
+                            for (int i = plugin.markers.size()-1; i >= 0; i--){
                                 DeathMarker marker = plugin.markers.get(i);
                                 if (marker.getPlayer().getUniqueId().equals(dead.getUniqueId())) plugin.markers.remove(i);
                             }

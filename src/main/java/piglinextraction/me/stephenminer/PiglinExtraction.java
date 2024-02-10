@@ -134,6 +134,8 @@ public final class PiglinExtraction extends JavaPlugin {
         getCommand("peHorde").setExecutor(hordeCmd);
         getCommand("peHorde").setTabCompleter(hordeCmd);
 
+        getCommand("peReload").setExecutor(new ReloadConfig());
+
     }
 
     public boolean isPluginWorld(World world){

@@ -89,9 +89,10 @@ public class SpawnNode {
         for (Class<? extends PiglinEntity> clazz : types){
             out.append(clazz.getName()).append("/");
         }
-        out.deleteCharAt(out.length());
+        out.deleteCharAt(out.length()-1);
         return out.toString();
     }
+
 
     public static SpawnNode parseNode(String str){
         PiglinExtraction plugin = JavaPlugin.getPlugin(PiglinExtraction.class);

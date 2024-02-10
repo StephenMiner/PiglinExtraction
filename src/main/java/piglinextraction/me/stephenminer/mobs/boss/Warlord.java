@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.PiglinBrute;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -42,9 +43,11 @@ public class Warlord extends PiglinEntity {
         reinforceInt = 1*60*20;
         reinforceUses = 4;
         count = reinforceInt;
-        mob.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(200);
-        mob.setHealth(200);
+        mob.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(900);
+        mob.setHealth(900);
+        ((PiglinBrute) mob).setImmuneToZombification(true);
         equip();
+        target();
     }
 
     /**

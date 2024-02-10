@@ -9,7 +9,6 @@ public class RoomEncounter extends Encounter {
 
     public RoomEncounter(String id) {
         super(id);
-        room = Room.BY_IDS.getOrDefault(id, null);
     }
 
 

@@ -8,10 +8,14 @@ import piglinextraction.me.stephenminer.levels.Level;
 import piglinextraction.me.stephenminer.levels.objectives.Objective;
 import piglinextraction.me.stephenminer.levels.objectives.RuneObj;
 import piglinextraction.me.stephenminer.levels.rooms.Room;
+import piglinextraction.me.stephenminer.mobs.boss.encounters.Encounter;
+import piglinextraction.me.stephenminer.mobs.boss.encounters.RandomHorde;
+import piglinextraction.me.stephenminer.mobs.boss.encounters.WarlordEncounter;
 import piglinextraction.me.stephenminer.mobs.hordes.Horde;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class LevelBuilder {
@@ -42,7 +46,8 @@ public class LevelBuilder {
             if (plugin.levelsFile.getConfig().contains(base + ".mat"))
                 mat = Material.matchMaterial(plugin.levelsFile.getConfig().getString(base + ".mat"));
             Level level = new Level(plugin,id,name,mat,spawn, null);
-            if (lobby != null) level.setLobby(lobby);
+            this.level = level;
+            if (lobby != null) this.level.setLobby(lobby);
             return true;
         }
         return false;
@@ -90,11 +95,39 @@ public class LevelBuilder {
         }
     }
 
+
+    private void buildEncounters(){
+        if (plugin.levelsFile.getConfig().contains(base + ".encounters")){
+            List<String> strEncounters = plugin.levelsFile.getConfig().getStringList(base + ".encounters");
+            strEncounters.stream()
+                    .map(this::buildEncounter)
+                    .filter(Objects::nonNull)
+                    .forEach(encounter -> level.getEncounters().add(encounter));
+        }
+    }
+
+    /**
+     *
+     * @param str formatted as encounter-type=encounter_data=encounter_data=etc...
+     * @return
+     */
+    private Encounter buildEncounter(String str){
+        String[] unbox = str.split("=");
+        String type = unbox[0];
+        return switch (type){
+            case "warlord" -> new WarlordEncounter(str);
+            case "randomhorde"-> new RandomHorde(str);
+            default -> null;
+        };
+    }
+
+
     public Level build(){
         loadBasicLevel();
         loadRooms();
         loadHorde();
         loadObjectives();
+        buildEncounters();
         return level;
     }
 

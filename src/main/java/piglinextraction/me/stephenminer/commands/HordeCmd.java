@@ -53,7 +53,7 @@ public class HordeCmd implements CommandExecutor, TabCompleter {
             if (sub.equalsIgnoreCase("create")){
                 if (size >= 2){
                     String id = args[1];
-                    if (!hordeIds(null).contains(id)){
+                    if (!validHorde(id)){
                         createHorde(id);
                         player.sendMessage(ChatColor.GREEN + "Created new horde entry with id " + id);
                         player.sendMessage(ChatColor.YELLOW + "Now you must add spawn nodes and define the trigger for this horde through the correct commands!");
@@ -66,12 +66,13 @@ public class HordeCmd implements CommandExecutor, TabCompleter {
             if (sub.equalsIgnoreCase("add-spawnnode")){
                 if (size >= 4){
                     String id = args[1];
-                    if (hordeIds(null).contains(id)){
+                    if (validHorde(id)){
                         try{
                             int toSpawn = Integer.parseInt(args[2]);
                             List<Class<? extends PiglinEntity>> classes = new ArrayList<>();
+                            MobTranslator translator = new MobTranslator();
                             for (int i = 3; i < size; i++){
-                                Class<? extends PiglinEntity> clazz = (Class<? extends PiglinEntity>) Class.forName(args[i]);
+                                Class<? extends PiglinEntity> clazz = translator.parseString(args[i]);
                                 classes.add(clazz);
                             }
                             Location loc = player.getLocation();
@@ -87,7 +88,7 @@ public class HordeCmd implements CommandExecutor, TabCompleter {
             if (sub.equalsIgnoreCase("remove-spannode")){
                 if (size >= 3){
                     String id = args[1];
-                    if (hordeIds(null).contains(id)){
+                    if (validHorde(id)){
                         String sLoc = args[2];
                         removeSpawnNode(id,sLoc);
                         player.sendMessage(ChatColor.GREEN + "Remoed horde spawn node at location " + sLoc + " for horde " + id);
@@ -98,7 +99,7 @@ public class HordeCmd implements CommandExecutor, TabCompleter {
 
             if (sub.equalsIgnoreCase("set-trigger")){
                 String id = args[1];
-                if (!hordeIds(null).contains(id)){
+                if (!validHorde(id)){
                     player.sendMessage(ChatColor.RED + "Invalid horde Id");
                     return false;
                 }
@@ -197,7 +198,7 @@ public class HordeCmd implements CommandExecutor, TabCompleter {
     private void setTrigger(String hordeId, String triggerId, TriggerType type){
         String strTrigger = triggerId + "/" + type.toString();
         plugin.hordesFile.getConfig().set("hordes." + hordeId + ".trigger",strTrigger);
-        plugin.hordesFile.saveConfig();
+        plugin  .hordesFile.saveConfig();
     }
 
 
@@ -217,6 +218,11 @@ public class HordeCmd implements CommandExecutor, TabCompleter {
             if (args[1].equalsIgnoreCase("set-trigger")) return potTriggerIds(args[3]);
         }
         return null;
+    }
+
+
+    private boolean validHorde(String id){
+        return plugin.hordesFile.getConfig().contains("hordes." + id);
     }
 
 

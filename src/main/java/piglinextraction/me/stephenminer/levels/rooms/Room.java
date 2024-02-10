@@ -47,8 +47,8 @@ public class Room {
         doors = new ArrayList<>();
         this.level = level;
         this.plugin = plugin;
-        this.corner1 = corner1;
-        this.corner2 = corner2;
+        this.corner1 = corner1.getBlock().getLocation().clone().add(0.5,0.5,0.5);
+        this.corner2 = corner2.getBlock().getLocation().clone().add(0.5,0.5,0.5);;
         this.id = id;
         destruction = false;
         BY_IDS.put(id, this);
@@ -59,8 +59,8 @@ public class Room {
         nodes = new ArrayList<>();
         lockers = new ArrayList<>();
         this.plugin = plugin;
-        this.corner1 = corner1;
-        this.corner2 = corner2;
+        this.corner1 = corner1.getBlock().getLocation().clone().add(0.5,0.5,0.5);;
+        this.corner2 = corner2.getBlock().getLocation().clone().add(0.5,0.5,0.5);;
         this.destruction = destruction;
         this.id = id;
         BY_IDS.put(id, this);
@@ -176,7 +176,7 @@ public class Room {
         inRoom = new HashSet<>();
         Set<UUID> old = new HashSet<>();
         World world = corner1.getWorld();
-        BoundingBox box = BoundingBox.of(corner1.getBlock().getLocation().clone().add(0.5,0.5,0.5), corner2.getBlock().getLocation().add(0.5,0.5,0.5));
+        BoundingBox box = BoundingBox.of(corner1,corner2);
         new BukkitRunnable(){
             @Override
             public void run(){
@@ -229,6 +229,12 @@ public class Room {
 
     }
 
+    private BoundingBox box;
+    public boolean isInRoom(Location loc){
+        if (box == null) box = BoundingBox.of(corner1,corner2);
+        return (box.overlaps(BoundingBox.of(loc.toVector(),loc.toVector())));
+    }
+
 
     private int minX(){ return Math.min(corner1.getBlockX(), corner2.getBlockX()); }
     private int minY(){ return Math.min(corner1.getBlockY(), corner2.getBlockY()); }
@@ -258,6 +264,8 @@ public class Room {
     public List<Locker> getLockers(){ return lockers; }
     public List<Mob> getFromNodes(){ return fromNodes; }
     public List<Door> getDoors(){ return doors; }
+
+    public Set<UUID> getInRoom() {return inRoom; }
 
     public void setKill(boolean kill){
         this.kill = kill;

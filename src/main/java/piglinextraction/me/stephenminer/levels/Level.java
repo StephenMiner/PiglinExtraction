@@ -1,5 +1,6 @@
 package piglinextraction.me.stephenminer.levels;
 
+import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.Hash;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -133,8 +134,9 @@ public class Level {
         for (Room room : rooms){
             room.unload();
         }
-        Set<UUID> uuids = spawned.keySet();
-        for (UUID uuid : uuids){
+        List<UUID> uuidList = new ArrayList<>(spawned.keySet());
+        for (int i = uuidList.size()-1; i >= 0; i--){
+            UUID uuid = uuidList.get(i);
             spawned.get(uuid).getMob().setHealth(0);
         }
         spawned.clear();
@@ -341,7 +343,8 @@ public class Level {
                 player.openInventory(stats.loadMenu());
                 plugin.rangedWeaponsP.remove(player.getUniqueId());
                 plugin.meleWeapons.remove(player.getUniqueId());
-                plugin.flashlights.remove(player.getUniqueId());
+                Flashlight light = plugin.flashlights.remove(uuid);
+                if (light != null) light.toggle(false);
                 player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
                 player.setHealth(20);
                 player.setExp(0);
@@ -427,6 +430,18 @@ public class Level {
     public void addHorde(Horde horde){
         hordes.add(horde);
     }
+
+    public int loadSpecialTimer(){ return plugin.levelsFile.getConfig().getInt("levels." + id + ".special-timings"); }
+    public int loadHordeTimer(){ return plugin.levelsFile.getConfig().getInt("levels." + id + ".horde-timings"); }
+    /**
+     * @return chance for hordes to spawn upon timer completion, 0-100
+     */
+    public int loadHordeChance(){ return plugin.levelsFile.getConfig().getInt("levels." + id + ".horde-chance"); }
+
+    /**
+     * @return chance for specials to spawn upon timer completion, 0-100
+     */
+    public int loadSpecialChance(){ return plugin.levelsFile.getConfig().getInt("levels." + id + ".special-chance"); }
 
 
     public static Level fromId(String id){
