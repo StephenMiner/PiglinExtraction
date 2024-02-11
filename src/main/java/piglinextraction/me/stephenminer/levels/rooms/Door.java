@@ -217,6 +217,7 @@ public class Door {
                 if (jamTime > 0){
                     String hordeId = plugin.roomsFile.getConfig().getString(path + ".horde");
                     Horde horde = new HordeBuilder(hordeId).build();
+                    horde.setLevel(room.getLevel());
                     JammedDoor door = new JammedDoor(plugin, id, room, loc1, loc2, jamTime, horde);
                     door.setDoSpaces(spaces);
                     door.save();

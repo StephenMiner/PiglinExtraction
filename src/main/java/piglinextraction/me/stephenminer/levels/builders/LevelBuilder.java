@@ -92,6 +92,7 @@ public class LevelBuilder {
             for (String hordeId : hordeIds){
                 Horde horde = new HordeBuilder(hordeId).build();
                 level.addHorde(horde);
+                horde.setLevel(level);
             }
         }
     }

@@ -74,8 +74,9 @@ public class WaitingRoom {
 
 
     public void monitorLobby(){
+         int waitTime = 2*20;
         new BukkitRunnable(){
-            int titleCount = 200;
+            int titleCount = waitTime;
             @Override
             public void run(){
                 if (level.isStarted()) {
@@ -101,7 +102,7 @@ public class WaitingRoom {
                             level.checkExtraction();
                         }
                         titleCount--;
-                    }else titleCount = 200;
+                    }else titleCount = waitTime;
                 }
             }
         }.runTaskTimer(plugin, 1, 1);

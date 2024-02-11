@@ -65,19 +65,20 @@ public class HordeCmd implements CommandExecutor, TabCompleter {
             //horde add-spawnnode [id] [toSpawn] [PiglinTypes...]
             //add-spawnnode
             if (sub.equalsIgnoreCase("add-spawnnode")){
-                if (size >= 4){
+                if (size >= 5){
                     String id = args[1];
                     if (validHorde(id)){
                         try{
                             int toSpawn = Integer.parseInt(args[2]);
+                            int spawnDelay = Integer.parseInt(args[3]);
                             List<Class<? extends PiglinEntity>> classes = new ArrayList<>();
                             MobTranslator translator = new MobTranslator();
-                            for (int i = 3; i < size; i++){
+                            for (int i = 4; i < size; i++){
                                 Class<? extends PiglinEntity> clazz = translator.parseString(args[i]);
                                 classes.add(clazz);
                             }
                             Location loc = player.getLocation();
-                            addSpawnNode(id,loc,toSpawn, classes);
+                            addSpawnNode(id,loc,toSpawn, spawnDelay, classes);
                             player.sendMessage(ChatColor.GREEN + "Created spawn node!");
                         }catch (Exception e){
                             e.printStackTrace();
@@ -130,25 +131,39 @@ public class HordeCmd implements CommandExecutor, TabCompleter {
         plugin.hordesFile.saveConfig();
     }
 
-    private void addSpawnNode(String hordeId, Location loc, int toSpawn, List<Class<? extends PiglinEntity>> types){
-        String path = "hordes." + hordeId + ".nodes." + plugin.fromBlockLoc(loc);
+    private void addSpawnNode(String hordeId, Location loc, int toSpawn, int spawnDelay,List<Class<? extends PiglinEntity>> types){
+        String path = "hordes." + hordeId + ".nodes";
         MobTranslator translator = new MobTranslator();
-        List<String> sTypes = types.stream().map(translator::fromClass).toList();
-        plugin.hordesFile.getConfig().set(path + ".types", sTypes);
-        plugin.hordesFile.getConfig().set(path + ".toSpawn",toSpawn);
+        StringBuilder out = new StringBuilder();
+        out.append(plugin.fromBlockLoc(loc)).append("/").append(toSpawn).append("/").append(spawnDelay).append("/");
+        for (Class<? extends PiglinEntity> clazz : types) out.append(translator.fromClass(clazz)).append("/");
+        out.deleteCharAt(out.length()-1);
+        List<String> sNodes= plugin.hordesFile.getConfig().getStringList(path);
+        sNodes.add(out.toString());
+        plugin.hordesFile.getConfig().set(path,sNodes);
         plugin.hordesFile.saveConfig();
     }
 
     private void removeSpawnNode(String hordeId,String sLoc){
-        String path = "hordes." + hordeId + ".nodes." + sLoc;
+        String path = "hordes." + hordeId + ".nodes";
+        List<String> sNodes = plugin.hordesFile.getConfig().getStringList(path);
+        int index = -1;
         plugin.hordesFile.getConfig().set(path,null);
+        for (int i = sNodes.size()-1; i >= 0; i--){
+            String entry = sNodes.get(i);
+            if (entry.contains(sLoc)) sNodes.remove(i);
+        }
+        plugin.hordesFile.getConfig().set(path,sNodes);
         plugin.hordesFile.saveConfig();
     }
 
     private boolean containsNode(String hordeId, Location loc){
         String sLoc = plugin.fromBlockLoc(loc);
-        Set<String> nodes = plugin.hordesFile.getConfig().getConfigurationSection("hordes." + hordeId + ".nodes." + plugin.fromBlockLoc(loc)).getKeys(false);
-        return nodes.stream().filter(str -> str.equalsIgnoreCase(sLoc)).findFirst().orElse(null) != null;
+        List<String> sNodes = plugin.hordesFile.getConfig().getStringList("hordes." + hordeId + ".nodes");
+        for (String entry : sNodes) {
+            if (entry.contains(sLoc)) return true;
+        }
+        return false;
     }
 
     private boolean validTriggerId(TriggerType type, String triggerId){
@@ -217,8 +232,11 @@ public class HordeCmd implements CommandExecutor, TabCompleter {
             if (args[1].equalsIgnoreCase("set-trigger")) return triggerTypes(args[2]);
         }
         if (size >= 4){
-            if (args[1].equalsIgnoreCase("add-spawnnode")) return piglinTypes(args[size-1]);
+            if (args[1].equalsIgnoreCase("add-spawnnode")) return spawnDelay();
             if (args[1].equalsIgnoreCase("set-trigger")) return potTriggerIds(args[3]);
+        }
+        if (size >= 5){
+            if (args[1].equalsIgnoreCase("add-spawnnode")) return piglinTypes(args[args.length-1]);
         }
         return null;
     }
@@ -267,6 +285,11 @@ public class HordeCmd implements CommandExecutor, TabCompleter {
     public List<String> toSpawn(){
         List<String> list = new ArrayList<>();
         list.add("[to-spawn]");
+        return list;
+    }
+    public List<String> spawnDelay(){
+        List<String> list = new ArrayList<>();
+        list.add("[spawn-delay]");
         return list;
     }
     

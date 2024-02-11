@@ -15,6 +15,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class Spear extends MeleWeapon{
         this.item = spear();
         giveItem();
         trackAttackCooldown();
+        armorPierce = ArmorPiercing.HIGH;
     }
 
 
@@ -43,7 +45,8 @@ public class Spear extends MeleWeapon{
         meta.setDisplayName(ChatColor.AQUA + "Spear");
         List<String> lore = new ArrayList<>();
         lore.add(ChatColor.ITALIC + "A tried and true weapon");
-        lore.add(ChatColor.ITALIC + "High range, good damage");
+        lore.add(ChatColor.YELLOW + "High range, good damage");
+        lore.add(ChatColor.YELLOW + "High armor piercing");
         lore.add("");
         lore.add(ChatColor.GRAY + "When in Main Hand:");
         lore.add(ChatColor.DARK_GREEN + "" + damage + " Attack Damage");

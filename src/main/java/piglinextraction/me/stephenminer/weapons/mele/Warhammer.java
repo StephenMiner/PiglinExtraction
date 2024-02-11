@@ -17,6 +17,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class Warhammer extends MeleWeapon{
         headsotMultiplier = 3.0f;
         attackSpeed = -3.4;
         hitStagger = 25;
+        armorPierce = ArmorPiercing.MEDIUM;
         id = "warhammer";
         item = warhammer();
         giveItem();
@@ -70,7 +72,7 @@ public class Warhammer extends MeleWeapon{
         List<Entity> entities = entity.getNearbyEntities(3, 3, 3);
         for (Entity e : entities){
             if (e instanceof Mob mob) {
-                super.attack(mob, false, false);
+                super.attack(mob, headshot, false);
             }
         }
     }

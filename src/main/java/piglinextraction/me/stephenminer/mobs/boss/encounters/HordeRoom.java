@@ -54,13 +54,21 @@ public class HordeRoom extends RoomEncounter{
     private void loadHordes(String str){
         String[] split = str.split("%");
         hordes = new ArrayList<>();
-        for (String entry : split) hordes.add(new HordeBuilder(entry).build());
+        for (String entry : split) {
+            Horde horde = new HordeBuilder(entry).build();
+            horde.setLevel(room.getLevel());
+            hordes.add(horde);
+        }
     }
 
     public boolean trigger(){
         if (!canTrigger) return false;
 
         runCooldown();
+        Horde horde = selectHorde();
+        horde.triggerHorde();
+        if (openDoors) openDoors(horde);
+        System.out.println(222222222);
         canTrigger = false;
         return true;
     }
@@ -77,9 +85,11 @@ public class HordeRoom extends RoomEncounter{
                     return;
                 }
                 if (count >= cooldown){
+                    count = 0;
                     canTrigger = true;
                     if (!room.getInRoom().isEmpty()) return;
                     Horde horde = selectHorde();
+                    horde.triggerHorde();
                     if (openDoors) openDoors(horde);
                 }else count++;
             }
@@ -95,7 +105,11 @@ public class HordeRoom extends RoomEncounter{
     private void openDoors(Horde horde){
         List<Room> rooms = roomsIn(horde);
         for (Room room : rooms){
-            room.getDoors().forEach(Door::open);
+            room.getDoors().forEach(door->{
+                door.setOpen(true);
+                door.open();
+                System.out.println(9999999);
+            });
         }
     }
 
@@ -109,6 +123,7 @@ public class HordeRoom extends RoomEncounter{
                 if (room.isInRoom(loc)) auxillaryRooms.add(room);
             }
         }
+        auxillaryRooms.add(room);
         return new ArrayList<>(auxillaryRooms);
     }
 

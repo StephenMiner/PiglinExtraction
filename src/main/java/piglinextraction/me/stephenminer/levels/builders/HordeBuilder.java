@@ -3,6 +3,7 @@ package piglinextraction.me.stephenminer.levels.builders;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.mobs.MobTranslator;
 import piglinextraction.me.stephenminer.mobs.PiglinEntity;
 import piglinextraction.me.stephenminer.mobs.hordes.Horde;
 import piglinextraction.me.stephenminer.mobs.hordes.SpawnNode;
@@ -35,22 +36,18 @@ public class HordeBuilder {
      * @param str formatted as "loc/toSpawn/spawnDelay/type1/type2/..."
      * @return SpawnNode
      */
-    private SpawnNode builtNode(String str){
+    private SpawnNode builtNode(Horde horde, String str){
         String[] split = str.split("/");
         Location loc = plugin.fromString(split[0]);
         int toSpawn = Integer.parseInt(split[1]);
         int spawnDelay = Integer.parseInt(split[2]);
         List<Class<? extends PiglinEntity>> types = new ArrayList<>();
+        MobTranslator translator = new MobTranslator();
         for (int i = 3; i < split.length; i++){
-            try {
-                Class<? extends PiglinEntity> clazz = (Class<? extends PiglinEntity>) Class.forName(split[i]);
-                types.add(clazz);
-            }catch (ClassNotFoundException e){
-                e.printStackTrace();
-                plugin.getLogger().log(Level.WARNING,split[i] + " isnt a valid PiglinEntity class name");
-            }
+            Class<? extends PiglinEntity> clazz = translator.parseString(split[i]);
+            types.add(clazz);
         }
-        return new SpawnNode(loc,toSpawn,spawnDelay,types);
+        return new SpawnNode(horde, loc,toSpawn,spawnDelay,types);
     }
 
     public Horde build(){
@@ -59,7 +56,7 @@ public class HordeBuilder {
         Horde horde = new Horde(id);
         List<String> sNodes = plugin.hordesFile.getConfig().getStringList(path);
         for (String entry : sNodes){
-            SpawnNode node = builtNode(entry);
+            SpawnNode node = builtNode(horde, entry);
             horde.addNode(node);
         }
         String triggerString = plugin.hordesFile.getConfig().getString("hordes." + id + ".trigger");

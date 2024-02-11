@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ public class ShortSword extends MeleWeapon {
         this.range = 2;
         hitStagger = 25;
         chargeStagger = true;
+        armorPierce = ArmorPiercing.LIGHT;
         this.item = blade();
         giveItem();
         trackAttackCooldown();

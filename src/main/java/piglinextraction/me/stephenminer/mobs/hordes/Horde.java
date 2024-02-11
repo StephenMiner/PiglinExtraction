@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.levels.Level;
 import piglinextraction.me.stephenminer.levels.rooms.Door;
 import piglinextraction.me.stephenminer.mobs.PiglinEntity;
 
@@ -23,6 +24,7 @@ public class Horde {
 
     private Trigger trigger;
     private boolean cleared;
+    private Level level;
 
 
     public Horde(String id){
@@ -40,18 +42,7 @@ public class Horde {
         }
     }
 
-    /**
-     * Will attempt to remove all monsters spawned as a result of this class and its SpawnNodes
-     */
-    public void clear(){
-        for (SpawnNode node : nodes){
-            Set<PiglinEntity> spawned = node.getSpawned();
-            for (PiglinEntity entity : spawned){
-                entity.getMob().setHealth(0);
-            }
-            node.getSpawned().clear();
-        }
-    }
+
 
 
 
@@ -102,21 +93,11 @@ public class Horde {
     public boolean isCleared(){ return cleared; }
     public void setCleared(boolean cleared){ this.cleared = cleared; }
 
-    public static Horde fromId(PiglinExtraction plugin, String id){
-        String path = "hordes." + id + ".nodes";
-        if (!plugin.hordesFile.getConfig().contains(path)) return null;
-        Horde horde = new Horde(id);
-        List<String> sNodes = plugin.hordesFile.getConfig().getStringList(path);
-        for (String entry : sNodes){
-            SpawnNode node = SpawnNode.parseNode(entry);
-            horde.addNode(node);
-        }
-        String triggerString = plugin.hordesFile.getConfig().getString("hordes." + id + ".trigger");
-        if (triggerString == null) return horde;
-        String[] split = triggerString.split("/");
-        TriggerType type = TriggerType.valueOf(split[1]);
-        Trigger trigger = new Trigger(horde, split[0],type);
-        horde.setTrigger(trigger);
-        return horde;
+    public Level getLevel(){
+        return level;
     }
+    public void setLevel(Level level){
+        this.level = level;
+    }
+
 }
