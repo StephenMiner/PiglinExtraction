@@ -21,8 +21,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RuneObj extends Objective{
     private ArmorStand displayer;
     private String name;
-    public RuneObj(PiglinExtraction plugin){
-        super(plugin, ObjectiveType.RUNE_COLLECTION);
+    public RuneObj(PiglinExtraction plugin, String id){
+        super(plugin, id, ObjectiveType.RUNE_COLLECTION);
         name = defineRuneType();
     }
 
@@ -168,5 +168,12 @@ public class RuneObj extends Objective{
         item.setItemMeta(meta);
         return item;
     }
+
+
+    @Override
+    public String getDisplay(){ return name; }
+
+    @Override
+    public String getStatus(){ return ": " + complete; }
 
 }

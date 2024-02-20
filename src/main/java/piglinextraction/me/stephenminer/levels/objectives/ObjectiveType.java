@@ -3,7 +3,8 @@ package piglinextraction.me.stephenminer.levels.objectives;
 public enum ObjectiveType {
     RUNE_COLLECTION("rune"),
     SLAY_ILLUSIONER("illusioner"),
-    SLAY_WARLORD("warlord");
+    SLAY_WARLORD("warlord"),
+    SLAYING("slaying");
 
 
     private final String collectionId;

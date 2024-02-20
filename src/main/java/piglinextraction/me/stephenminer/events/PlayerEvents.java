@@ -19,6 +19,8 @@ import piglinextraction.me.stephenminer.PiglinExtraction;
 import piglinextraction.me.stephenminer.levels.Level;
 
 import org.bukkit.event.Listener;
+import piglinextraction.me.stephenminer.levels.objectives.Objective;
+import piglinextraction.me.stephenminer.levels.objectives.SlayingObj;
 import piglinextraction.me.stephenminer.player.DeathMarker;
 import piglinextraction.me.stephenminer.player.GameProfile;
 import piglinextraction.me.stephenminer.player.loadout.LoadOut;
@@ -342,6 +344,22 @@ public class PlayerEvents implements Listener{
         if (plugin.rangedWeaponsP.containsKey(player.getUniqueId()) && plugin.rangedWeaponsP.get(player.getUniqueId()) instanceof LongRifle rifle) {
             if (hasLore(item, rifle.getId())){
                 rifle.zoom(event.isSneaking());
+            }
+        }
+    }
+
+    @EventHandler
+    public void slayingObjective(EntityDeathEvent event){
+        LivingEntity living = event.getEntity();
+        for (Level level : Level.levels){
+            if (level.getSpawned().containsKey(living.getUniqueId())){
+                level.getSpawned().remove(living.getUniqueId());
+                for (Objective objective : level.getObjectives()){
+                    if (objective.isComplete()) continue;
+                    if (objective instanceof SlayingObj slaying){
+                        slaying.checkKill(living);
+                    }
+                }
             }
         }
     }

@@ -18,16 +18,17 @@ public class Objective {
     protected final List<Location> potentialSpawns;
     protected boolean complete;
     protected boolean kill;
-    protected String name;
+    protected String name, id;
 
     protected Player collected;
 
 
 
-    public Objective(PiglinExtraction plugin, ObjectiveType type){
+    public Objective(PiglinExtraction plugin, String id, ObjectiveType type){
         this.type = type;
         this.plugin = plugin;
         potentialSpawns = new ArrayList<>();
+        this.id = id;
         Bukkit.broadcastMessage("Created Objective object");
     }
 
@@ -76,7 +77,8 @@ public class Objective {
         for (Location loc : potentialSpawns){
             locStrings.add(plugin.fromBlockLoc(loc));
         }
-        plugin.levelsFile.getConfig().set(path + ".objs." + type.name() + ".spawns", locStrings);
+        plugin.levelsFile.getConfig().set(path + ".objs." + id + ".spawns", locStrings);
+        plugin.levelsFile.getConfig().set(path + ".objs." + id + ".type",type);
         plugin.levelsFile.saveConfig();
         return true;
     }
@@ -103,4 +105,9 @@ public class Objective {
         this.collected = player;
     }
     public Player getWhoCompleted(){ return collected; }
+
+    public String getDisplay(){ return type.collectionId().replace('_',' '); }
+
+    public String getStatus(){ return ""; }
+
 }

@@ -13,6 +13,8 @@ import piglinextraction.me.stephenminer.levels.Level;
 import piglinextraction.me.stephenminer.levels.objectives.Objective;
 import piglinextraction.me.stephenminer.levels.objectives.ObjectiveType;
 import piglinextraction.me.stephenminer.levels.objectives.RuneObj;
+import piglinextraction.me.stephenminer.levels.objectives.SlayingObj;
+import piglinextraction.me.stephenminer.mobs.PiglinType;
 
 import java.util.*;
 
@@ -55,7 +57,7 @@ public class LevelCmd implements CommandExecutor, TabCompleter {
                     player.sendMessage(ChatColor.GREEN + "Set level start spawn for level " + args[1]);
                     return true;
                 }
-                if (size >= 3){
+                if (size >= 4){
                     if (args[0].equalsIgnoreCase("addObjective")){
                         if (plugin.levelsFile.getConfig().contains("levels." + args[1])){
                             UUID uuid = player.getUniqueId();
@@ -63,11 +65,24 @@ public class LevelCmd implements CommandExecutor, TabCompleter {
                                 player.sendMessage(ChatColor.RED + "You are currently already adding objective spawns to level " + tiedLevel.get(uuid) + ". Either cancel or finish this process before using this command again!");
                             }
                             ObjectiveType type = ObjectiveType.valueOf(args[2].toUpperCase());
-                            addObj.put(uuid, fromType(type));
-                            tiedLevel.put(uuid, args[1]);
-                            player.sendMessage(ChatColor.GREEN + "Right click on the blocks you want this objective to be able to spawn on top of!");
-                            player.sendMessage(ChatColor.YELLOW + "Type 'done' in chat when you are finished to save the objectives to the level!");
-                            player.sendMessage(ChatColor.YELLOW + "Type 'cancel' in chat to cancel this process");
+                            String id = args[3];
+                            if (type == ObjectiveType.RUNE_COLLECTION) {
+                                addObj.put(uuid, fromType(id, type));
+                                tiedLevel.put(uuid, args[1]);
+                                player.sendMessage(ChatColor.GREEN + "Right click on the blocks you want this objective to be able to spawn on top of!");
+                                player.sendMessage(ChatColor.YELLOW + "Type 'done' in chat when you are finished to save the objectives to the level!");
+                                player.sendMessage(ChatColor.YELLOW + "Type 'cancel' in chat to cancel this process");
+                                return true;
+                            }else if (size >= 6){
+                                if (type == ObjectiveType.SLAYING) {
+                                    String sType = args[4];
+                                    PiglinType piglin = PiglinType.valueOf(sType);
+                                    int num = Integer.parseInt(args[5]);
+                                    saveSlayingObj(id,args[1],piglin, num);
+                                    player.sendMessage(ChatColor.GREEN + "Successfully created slaying objective");
+                                    return true;
+                                }
+                            }
                             return true;
                         }
                     }
@@ -237,10 +252,16 @@ public class LevelCmd implements CommandExecutor, TabCompleter {
         return false;
     }
 
-    private Objective fromType(ObjectiveType type){
+
+    private void saveSlayingObj(String id,String levelId,  PiglinType type, int num){
+        SlayingObj obj = new SlayingObj(plugin,id,type,num);
+        obj.save(levelId);
+    }
+
+    private Objective fromType(String id, ObjectiveType type){
         return switch (type){
-            case RUNE_COLLECTION -> new RuneObj(plugin);
-            default -> new Objective(plugin, type);
+            case RUNE_COLLECTION -> new RuneObj(plugin, id);
+            default -> new Objective(plugin, id, type);
         };
     }
 

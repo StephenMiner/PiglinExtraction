@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
+import org.bukkit.metadata.FixedMetadataValue;
 import piglinextraction.me.stephenminer.PiglinExtraction;
 import piglinextraction.me.stephenminer.levels.Level;
 import piglinextraction.me.stephenminer.weapons.ArmorPiercing;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 public class PiglinEntity{
     public static List<PiglinEntity> cache = new ArrayList<>();
+
 
 
     protected final PiglinType type;
@@ -46,6 +48,8 @@ public class PiglinEntity{
         this.armor = armor;
         mob = (Mob) spawn.getWorld().spawnEntity(spawn, type.getType());
         mob.setMetadata(armor.tag(),armor.data());
+        mob.setMetadata("mobId",new FixedMetadataValue(plugin,type.getId()));
+
         this.lightActivation = lightActivation;
         playerTargetWhitelist = new ArrayList<>();
         if (mob instanceof Piglin piglin){

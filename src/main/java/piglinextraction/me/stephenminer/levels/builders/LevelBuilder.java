@@ -7,6 +7,7 @@ import piglinextraction.me.stephenminer.PiglinExtraction;
 import piglinextraction.me.stephenminer.levels.Level;
 import piglinextraction.me.stephenminer.levels.objectives.Objective;
 import piglinextraction.me.stephenminer.levels.objectives.RuneObj;
+import piglinextraction.me.stephenminer.levels.objectives.SlayingObj;
 import piglinextraction.me.stephenminer.levels.rooms.Room;
 import piglinextraction.me.stephenminer.mobs.boss.encounters.Encounter;
 import piglinextraction.me.stephenminer.mobs.boss.encounters.HordeRoom;
@@ -72,8 +73,10 @@ public class LevelBuilder {
         if (plugin.levelsFile.getConfig().contains(base + ".objs")){
             Set<String> objectiveIds = plugin.levelsFile.getConfig().getConfigurationSection(base + ".objs").getKeys(false);
             for (String objId : objectiveIds){
-                Objective obj = switch (objId){
-                    case "RUNE_COLLECTION" -> new RuneObj(plugin);
+                String sType = plugin.levelsFile.getConfig().getString(base + ".objs." + objId);
+                Objective obj = switch (sType){
+                    case "RUNE_COLLECTION" -> new RuneObj(plugin, objId);
+                    case "SLAYING" -> new SlayingObj(plugin, objId, id);
                     default -> null;
                 };
                 if (obj == null) continue;

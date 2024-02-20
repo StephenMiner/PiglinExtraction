@@ -49,10 +49,6 @@ public class MobEvents implements Listener {
                     Bukkit.getPluginManager().callEvent(new PlayerNoiseEvent(event.getEntity().getLocation(), 2));
                 }
             }
-            UUID uuid = entity.getUniqueId();
-            for (Level lvl : Level.levels){
-                lvl.getSpawned().remove(uuid);
-            }
         }
     }
     //OLD TEST
