@@ -95,11 +95,14 @@ public class WaitingRoom {
                             for (UUID uuid : readyPlayers.keySet()){
                                 Player player = plugin.getServer().getPlayer(uuid);
                                 level.spawnPlayer(player);
+                                level.getBoard().addPlayer(player);
                             }
                             level.load();
                             level.start(true);
+                            level.getBoard().update();
                             level.monitorLevel();
                             level.checkExtraction();
+
                         }
                         titleCount--;
                     }else titleCount = waitTime;
