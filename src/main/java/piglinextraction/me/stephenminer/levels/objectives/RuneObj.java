@@ -138,6 +138,14 @@ public class RuneObj extends Objective{
         runes[2] = "Legendary Rune of Spite";
         return runes[ThreadLocalRandom.current().nextInt(runes.length)];
     }
+    public String shorten(String runeName){
+        return switch (runeName){
+            case "Legendary Rune" -> "Legendary Rune";
+            case "Legendary Rune of Replacement" -> "Replacement Rune";
+            case "Legendary Rune of Spite" -> "Spite Rune";
+            default -> null;
+        };
+    }
     public ItemStack runeDisplay(String type){
         Material mat = switch (type){
             case "Legendary Rune" -> Material.GOLD_BLOCK;
@@ -171,7 +179,7 @@ public class RuneObj extends Objective{
 
 
     @Override
-    public String getDisplay(){ return name; }
+    public String getDisplay(){ return shorten(name); }
 
     @Override
     public String getStatus(){ return ": " + complete; }

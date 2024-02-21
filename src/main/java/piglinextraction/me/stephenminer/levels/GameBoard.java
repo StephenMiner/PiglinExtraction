@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Criteria;
+import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import piglinextraction.me.stephenminer.PiglinExtraction;
@@ -28,27 +29,27 @@ public class GameBoard {
         this.players = new ArrayList<>();
         taken = new HashSet<>();
         teams = new HashMap<>();
-        initBoard();
 
     }
 
 
 
-    private void initBoard(){
+    public void initBoard(){
         board = Bukkit.getScoreboardManager().getNewScoreboard();
         org.bukkit.scoreboard.Objective objective = board.registerNewObjective("board", Criteria.DUMMY,"Piglin Extraction");
-        int i = 0;
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        int i = 20;
         HashMap<ObjectiveType,List<Objective>> sorted = sortObjectives(level.getObjectives());
         for (ObjectiveType type : sorted.keySet()){
             objective.getScore(ChatColor.BOLD + type.collectionId()).setScore(i);
-            i++;
+            i--;
             for (Objective obj : sorted.get(type)){
                 Team team = board.registerNewTeam(obj.getDisplay());
-                String entry = genUniqueColor();
+                String entry = obj.getDisplay();//genUniqueColor();
                 team.addEntry(entry);
                 objective.getScore(entry).setScore(i);
                 teams.put(team,obj);
-                i++;
+                i--;
             }
         }
 
@@ -58,7 +59,11 @@ public class GameBoard {
         HashMap<ObjectiveType, List<Objective>> out = new HashMap<>();
         for (Objective obj : objectives){
             if (out.containsKey(obj.getType())) out.get(obj.getType()).add(obj);
-            else out.put(obj.getType(),new ArrayList<>()).add(obj);
+            else {
+                List<Objective> objs = new ArrayList<>();
+                objs.add(obj);
+                out.put(obj.getType(),objs);
+            }
         }
         return out;
     }
@@ -97,13 +102,17 @@ public class GameBoard {
             @Override
             public void run(){
                 if (!level.isStarted()){
+                    for (int i = players.size()-1; i>=0; i--){
+                        try{
+                            Player player = Bukkit.getPlayer(players.get(i));
+                            removePlayer(player);
+                        }catch (Exception ignored){}
+                    }
                     this.cancel();
                     return;
                 }
                 for (Team team : teams.keySet()){
-                    // There should only be 1 entry at any given time!
-                    // Pray to the heavens I swear this isnt a 2D LOOP!!!
-                    team.setPrefix(teams.get(team).getStatus());
+                    team.setSuffix(teams.get(team).getStatus());
                 }
             }
         }.runTaskTimer(plugin,1,1);

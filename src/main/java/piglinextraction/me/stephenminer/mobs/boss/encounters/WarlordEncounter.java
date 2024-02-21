@@ -28,7 +28,7 @@ public class WarlordEncounter extends RoomEncounter{
      */
     /**
      *
-     * @param str formatted as "warlord=room=flag=spawn=loc1/loc2/loc3-type1,type2,type3=TBD"
+     * @param str formatted as "warlord=room=flag=spawn=loc1/loc2/loc3%type1,type2,type3=TBD"
      */
     public WarlordEncounter(String str){
         super("warlord");
@@ -56,7 +56,7 @@ public class WarlordEncounter extends RoomEncounter{
 
     /**
      *
-     * @param str formatted as "loc1/loc2/...-type1,type2,...=loc1/loc2/...%type1,..."
+     * @param str formatted as "loc1/loc2/...%type1,type2,...=loc1/loc2/...%type1,..."
      * @return list of Reinforcement objects based of str data
      */
     public List<Reinforcement> loadReinforcements(String str){

@@ -54,7 +54,7 @@ public class SlayingObj extends Objective{
         String path = "levels." + levelId;
         if (!plugin.levelsFile.getConfig().contains(path)) return false;
         path += ".objs." + id;
-        plugin.levelsFile.getConfig().set(path + ".piglin", piglin);
+        plugin.levelsFile.getConfig().set(path + ".piglin", piglin.toString());
         plugin.levelsFile.getConfig().set(path + ".needed", needed);
         plugin.levelsFile.saveConfig();
         return true;

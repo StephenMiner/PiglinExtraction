@@ -72,7 +72,6 @@ public class Level {
         Level.levels.add(this);
         spawned = new HashMap<>();
         this.waitingRoom = new WaitingRoom(plugin, Level.levels.get(Level.levels.indexOf(this)));
-        board = new GameBoard(this);
         Bukkit.broadcastMessage("Level object 1");
     }
     public Level(PiglinExtraction plugin, String id, String name, Material icon, Location spawn, List<Room> rooms){
@@ -94,7 +93,6 @@ public class Level {
         Level.levels.add(this);
         this.waitingRoom = new WaitingRoom(plugin, Level.levels.get(Level.levels.indexOf(this)));
         spawned = new HashMap<>();
-        board = new GameBoard(this);
         Bukkit.broadcastMessage("Level object 2");
     }
     public Level(PiglinExtraction plugin, String id, String name, List<Room> rooms){
@@ -114,7 +112,7 @@ public class Level {
         this.hordes = new ArrayList<>();
         this.waitingRoom = new WaitingRoom(plugin, Level.levels.get(Level.levels.indexOf(this)));
         spawned = new HashMap<>();
-        board = new GameBoard(this);
+
         Bukkit.broadcastMessage("Level object 3");
     }
 
@@ -450,6 +448,7 @@ public class Level {
     public int loadSpecialChance(){ return plugin.levelsFile.getConfig().getInt("levels." + id + ".special-chance"); }
 
     public GameBoard getBoard(){ return board; }
+    public void setBoard(GameBoard board){ this.board = board; }
 
 
     public static Level fromId(String id){

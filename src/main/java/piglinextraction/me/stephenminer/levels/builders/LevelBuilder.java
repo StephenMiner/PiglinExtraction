@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 import piglinextraction.me.stephenminer.PiglinExtraction;
+import piglinextraction.me.stephenminer.levels.GameBoard;
 import piglinextraction.me.stephenminer.levels.Level;
 import piglinextraction.me.stephenminer.levels.objectives.Objective;
 import piglinextraction.me.stephenminer.levels.objectives.RuneObj;
@@ -73,7 +74,7 @@ public class LevelBuilder {
         if (plugin.levelsFile.getConfig().contains(base + ".objs")){
             Set<String> objectiveIds = plugin.levelsFile.getConfig().getConfigurationSection(base + ".objs").getKeys(false);
             for (String objId : objectiveIds){
-                String sType = plugin.levelsFile.getConfig().getString(base + ".objs." + objId);
+                String sType = plugin.levelsFile.getConfig().getString(base + ".objs." + objId + ".type");
                 Objective obj = switch (sType){
                     case "RUNE_COLLECTION" -> new RuneObj(plugin, objId);
                     case "SLAYING" -> new SlayingObj(plugin, objId, id);
@@ -134,6 +135,9 @@ public class LevelBuilder {
         loadHorde();
         loadObjectives();
         buildEncounters();
+        GameBoard board = new GameBoard(level);
+        board.initBoard();
+        level.setBoard(board);
         return level;
     }
 

@@ -78,7 +78,7 @@ public class Objective {
             locStrings.add(plugin.fromBlockLoc(loc));
         }
         plugin.levelsFile.getConfig().set(path + ".objs." + id + ".spawns", locStrings);
-        plugin.levelsFile.getConfig().set(path + ".objs." + id + ".type",type);
+        plugin.levelsFile.getConfig().set(path + ".objs." + id + ".type",type.toString());
         plugin.levelsFile.saveConfig();
         return true;
     }

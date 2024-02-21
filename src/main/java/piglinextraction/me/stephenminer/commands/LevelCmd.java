@@ -41,11 +41,8 @@ public class LevelCmd implements CommandExecutor, TabCompleter {
                     player.sendMessage(ChatColor.RED + "Sorry, but you don't have permission to use this command!");
                     return false;
                 }
-                if (!plugin.levelsFile.getConfig().contains("levels." + args[1])){
-                    player.sendMessage(ChatColor.RED + "Inputted level " + args[1] + " doesn't exist!");
-                    return false;
-                }
                 if (args[0].equalsIgnoreCase("setLobby")){
+                    if (!verifyId(player,args[1])) return false;
                     plugin.levelsFile.getConfig().set("levels." + args[1] + ".lobby", plugin.fromLoc(player.getLocation()));
                     plugin.levelsFile.saveConfig();
                     player.sendMessage(ChatColor.GREEN + "Set lobby spawn for level " + args[1] + "!");
@@ -59,6 +56,7 @@ public class LevelCmd implements CommandExecutor, TabCompleter {
                 }
                 if (size >= 4){
                     if (args[0].equalsIgnoreCase("addObjective")){
+                        if (!verifyId(player,args[1])) return false;
                         if (plugin.levelsFile.getConfig().contains("levels." + args[1])){
                             UUID uuid = player.getUniqueId();
                             if (addObj.containsKey(uuid) || tiedLevel.containsKey(uuid)){
@@ -263,6 +261,14 @@ public class LevelCmd implements CommandExecutor, TabCompleter {
             case RUNE_COLLECTION -> new RuneObj(plugin, id);
             default -> new Objective(plugin, id, type);
         };
+    }
+
+    private boolean verifyId(Player player, String levelId){
+        if (!plugin.levelsFile.getConfig().contains("levels." + levelId)){
+            player.sendMessage(ChatColor.RED + "Inputted level " + levelId + " doesn't exist!");
+            return false;
+        }
+        return true;
     }
 
     private void cleanupTimer(Player player){
