@@ -1,6 +1,6 @@
 PIGLIN EXTRACTION
 
-The UNWRITTEN RULES:
+/nThe UNWRITTEN RULES:
 To create encounters in levels, do the following
 (example for warlord)
 levels:
